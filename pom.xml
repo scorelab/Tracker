@@ -7,6 +7,6 @@
   <packaging>pom</packaging>
   <name>MobilityTrack</name>
     <modules>
-      
+      <module>MobilityTrackWeb</module>
     </modules>
 </project>
