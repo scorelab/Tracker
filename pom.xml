@@ -8,5 +8,6 @@
   <name>MobilityTrack</name>
     <modules>
       <module>MobilityTrackWeb</module>
+      <module>MobilityTrackAndroid</module>
     </modules>
 </project>
