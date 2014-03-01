@@ -7,7 +7,7 @@
   <packaging>pom</packaging>
   <name>MobilityTrack</name>
     <modules>
-      <module>MobilityTrackWeb</module>
-      <module>MobilityTrackAndroid</module>
+      <module>mobility-track-web</module>
+      <module>mobility-track-android</module>
     </modules>
 </project>
