@@ -13,6 +13,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        
         <activity
             android:name="lk.ucsc.apps.mobilitytrackandroid.MainActivity"
             android:label="@string/app_name" >
@@ -22,6 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+     	<service android:name=".ServiceTrack"/> 
     </application>
-
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />    
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
