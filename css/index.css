@@ -40,7 +40,7 @@ a{
     background-color: #448ccb;
     width: 100%;
     height: 500px;
-    opacity:0.6;
+    opacity:0.4;
     position: absolute;
 }
 
@@ -60,30 +60,42 @@ a{
     font-size: 95px;
     font-family: 'Open Sans';
     text-align: center;
-    padding-left: 140px;
+    padding-left: 20px;
 }
 
-.head-main-color .text .t02{
-    padding-left: 100px;
+.t02{
+    font-size: 20px;
+    font-family: 'Open Sans';
+    color: #525252;
+    text-align: center;
+    font-weight: bold;
+    background-color: white;
+    width: 720px;
 }
 
-.head-main-color .text .t02, .bt-contri{
+.bt-contri{
     font-size: 20px;
     font-family: 'Open Sans';
     color: #fff;
     text-align: center;
-}
-
-.head-main-color .text .t03 .bt-contri{
     width: 175px;
     height: 50px;
-    border: solid #fff thin;
+    border: solid #fff thick;
     line-height: 45px;
     padding:10px;
+    -moz-box-shadow:2px 2px 1px rgba(0,0,0,0.3);
+    -webkit-box-shadow:2px 2px 1px rgba(0,0,0,0.3);
+    box-shadow:2px 2px 1px rgba(0,0,0,0.3);
+    background-color: #0A7ADB;
+}
+
+.bt-contri{
+    font-weight: 600;
 }
 
 .head-main-color .text .t03{
     padding-left: 250px;
+
 }
 
 .nav-main{
@@ -91,6 +103,9 @@ a{
     height: 100px;
     background-color: #1c1c1c;
     position: absolute;
+    -moz-box-shadow:2px 2px 2px rgba(0,0,0,0.5);
+    -webkit-box-shadow:2px 2px 2px rgba(0,0,0,0.5);
+    box-shadow:2px 2px 2px rgba(0,0,0,0.5);
  }
 
 .tnav li{
@@ -99,27 +114,33 @@ a{
     font-family: 'Open Sans';
     font-size: 24px;
     color: #fff;
-    -webkit-transition: all 0.3s ease-out;
-    -moz-transition: all 0.3s ease-out;
-    -o-transition: all 0.3s ease-out;
-    transition: all 0.3s ease-out;
-
-}
-
-.tnav li:hover{
-    font-family: 'Open Sans';
-    font-size: 24px;
-    font-weight: 600;
-}
-
-.head-main-color .text .t03 .bt-contri:hover{
-    font-family: 'Open Sans';
-    font-size: 24px;
-    font-weight: 400;
 }
 
 
 .tnavbar{
     height: 50px;
     padding-top: 25px;
+}
+
+.body01{
+    height: 500px;
+}
+
+.mid01{
+    height: 100px;
+    background: url("../images/crossword.png");
+    -moz-box-shadow:2px 2px 2px rgba(0,0,0,0.5);
+    -webkit-box-shadow:2px 2px 2px rgba(0,0,0,0.5);
+    box-shadow:2px 2px 2px rgba(0,0,0,0.5);
+}
+
+.mid01-text{
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    line-height: 36px;
+}
+
+.mid02{
+    height: 300px;
 }
