@@ -20,7 +20,7 @@ This consists of several main modules
 
 3. cd to the mobility-track-nodejs folder. Do an npm install. It will install all the pakages.
 ```cd mobility-track-nodejs```
-```npm install``
+```npm install```
 
 4. Run mongodb. Default path is set to root/data/db. You can change it when you are running.
 5. Now run the node server, it will listen to port 3000.
