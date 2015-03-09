@@ -14,19 +14,24 @@ This consists of several main modules
 ##Installation Guide 
 
 1. Clone the repo using
-  ```git clone https://github.com/scorelab/Tracker.git```
+  ```
+git clone https://github.com/scorelab/Tracker.git
+```
 
 2. Install node and mongodb.
 
 3. cd to the mobility-track-nodejs folder. Do an npm install. It will install all the pakages.
-  ```cd mobility-track-nodejs```
+  ```
+cd mobility-track-nodejs
+```
 
-  ```npm install```
+  ```
+  npm install
+  ```
 
 4. Run mongodb. Default path is set to `/data/db` ( On Windows this would be `C:\data\db`). You can change it when you are running.
 5. Now run the node server, it will listen to port 3000.
-6. 
-  ```
+```
 node server.js
 ```
 
