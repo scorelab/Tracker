@@ -26,6 +26,8 @@ This consists of several main modules
 4. Run mongodb. Default path is set to `/data/db` ( On Windows this would be `C:\data\db`). You can change it when you are running.
 5. Now run the node server, it will listen to port 3000.
 6. 
-  ```node server.js``
+  ```
+node server.js
+```
 
 
