@@ -44,11 +44,12 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-
-require('./routes');
-//Routs
+//Routes
 //===============================
 
+require('./routes');
+
+//===============================
 
 
 
