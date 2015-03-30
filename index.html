@@ -20,6 +20,29 @@
     <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script src="js/scroll.js"></script>
 
+    <!-- ****** favicons ****** -->
+    <link rel="shortcut icon" href="images/fav/favicon.ico">
+    <link rel="icon" sizes="16x16 32x32 64x64" href="images/fav/favicon.ico">
+    <link rel="icon" type="image/png" sizes="196x196" href="images/fav/favicon-192.png">
+    <link rel="icon" type="image/png" sizes="160x160" href="images/fav/favicon-160.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="images/fav/favicon-96.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="images/fav/favicon-64.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/fav/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/fav/favicon-16.png">
+    <link rel="apple-touch-icon" href="images/fav/favicon-57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/fav/favicon-114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/fav/favicon-72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="images/fav/favicon-144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="images/fav/favicon-60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="images/fav/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="images/fav/favicon-76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="images/fav/favicon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/fav/favicon-180.png">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+    <meta name="msapplication-TileImage" content="images/fav/favicon-144.png">
+    <meta name="msapplication-config" content="images/fav/browserconfig.xml">
+    <!-- ****** favicons ****** -->
+
 </head>
 
 <body>
@@ -32,22 +55,21 @@
 
 
 <div class="head-main">
-    <div class="head-main-color01"></div>
     <div class="container-fluid head-main-color">
         <div class="row blank"></div>
 
         <div class="container">
-        <div class="row">
             <div class="col-lg-2"></div>
             <div class="text col-lg-6">
                 <span class="t01"><b>TRACKER</b>STRAP</span>
                 <div class="t02"><p>Real Time Mobility Tracking System</p></div>
-                <div class="t03"> <span class="bt-contri"><a href="#">CONTRIBUTE</a></span> </div>
+                <div class="t03"> <span class="bt-contri"><a href="#contribute">CONTRIBUTE</a></span> </div>
             </div>
-        </div>
+
         </div>
 
     </div>
+
 </div>
 
 <div class="nav-main">
@@ -57,8 +79,8 @@
             <div class="tnavbar col-lg-6">
                 <ul class="tnav">
                     <li><a href="#about">About</a></li>
-                    <li><a href="#">Developers</a></li>
-                    <li><a href="#">Contribute</a></li>
+                    <li><a href="#developer">Developers</a></li>
+                    <li><a href="#contribute">Contribute</a></li>
                 </ul>
             </div>
         </div>
@@ -66,18 +88,71 @@
 
 </div>
 
-<div class="container body01"></div>
+<div class="mid00">
+    <div class="container">
+        <div class="col-lg-6 text-justy">
+            <a id="about"></a><h3>Problem</h3></a>
+            Unavailability of a low cost,secure,open source and easily configurable system for device tracking. Everyone likes to know that their product or any item that they are delivering has gone to the their destination place.</br>
+
+            <h3>Solution</h3>
+               <p>A low cost open source GPS based device tracking system which uses android devices to   track and collect data.</p>
+
+            <p>Trackerstrap offers a accurate, reliable, and easy to use GPS tracking system.Internet based software allows the user to monitor and manage his device over the internet from anywhere via any device and present all these data in an easy to understand format.</p>
+
+            <p>This allows the user to track several type of resources at once.Rich user interface display a map with the current positions of the devices along with their paths for a pre-defined time.Trackerstrap provides the ability to filter data of different trackers and visualize them in a dashboard which is accesible by the manager.</p>
+
+            <p>User can easy attached a android device that runs Trackerstrap and track device via internet. Also user can monitor multiple devices at one time from this users time and money will save. With this Trackerstrap you ill feel safe. To enable this tracking system you will only need MAC Address of the device.</p>
+            <p>Once you add MAC Address of the device that you want to track you can see the tracking details on your Trackerstrap.</p>
+            <h3>Features</h3>
+            <div class="features">
+                <span>
+                    <ul>
+                        <li>Can add multiple  devices.</li>
+                        <li>User can add or remove device anytime.</li>
+                        <li>Simple to use.</li>
+                        <li>Rich UI design.</li>
+                        <li>Easy deploy on  service like EC2.</li>
+                      </ul>
+                </span>
+            </div>
+        </div>
+
+        <div class="col-lg-6 img-c01"> <img src="images/img-c01.png" class="img-responsive" alt="Map Sample"/></div>
+    </div>
+
+</div>
 
 <div class="container-fluid">
 
 <div class="row mid01">
-    <div class="container"><div class="mid01-text"><b>Lorem Ipsum</b> is simply dummy text of the printing and typesetting industry. <b>Lorem Ipsum</b> has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</div>
+    <div class="container"><div class="mid01-text"> ~ Track Any <b>Android</b> Device, Just add <b>MAC Address</b> ~</div>
     </div>
 </div>
 
 
 <div class="row mid02">
-    <div class="container"><h2 id="about">About</h2></div>
+    <div class="container developer"><h2 id="developer">Developers</h2>
+    <p><b>Tracker</b> is to help developers to jump start developing any kind of mobility tracking applications.</p>
+        <p>This consists of several main modules</p>
+
+        <ul><li>HTML5+AngularJS Front-end</li>
+            <li>NodeJS+MongoDB API for collecting and querying tracker data</li>
+            <li>Php+MySQL backend to manage the trackers & etc</li>
+            <li>Android app to push data to the API</li>
+            <li>Documentation</li>
+        </ul>
+
+    </div>
+</div>
+
+
+    <div class="row mid01">
+        <div class="container"><div class="mid01-text"> ~ Track Any <b>Android</b> Device, Just add <b>MAC Address</b> ~</div>
+        </div>
+    </div>
+
+<div class="row mid03">
+        <div class="container"><h2 id="contribute">Contribute</h2></div>
 </div>
 
     </div>
