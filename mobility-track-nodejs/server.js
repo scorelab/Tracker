@@ -45,9 +45,7 @@ app.configure('development', function(){
 });
 
 //Routes
-//===============================
-
-require('./routes');
+require('./routes')(app);
 
 //===============================
 

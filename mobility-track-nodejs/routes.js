@@ -1,8 +1,11 @@
-//index
+module.exports = function(app){
+  var controllers = require('./controllers/index');
+var tracker = require('./controllers/tracker');
+
 app.get('/', controllers.index);
 
-//API
-//-------------------------------
+
+
 
 //Tracker
 app.get('/api/tracker/locations', tracker.locations);
@@ -17,3 +20,4 @@ app.get('/api/tracker/:id/delete', tracker.delete);
 //TrackerLocation
 app.get('/api/tracker/location/data', tracker.listLocationData);
 app.post('/api/tracker/location/data', tracker.addLocationData);
+}
