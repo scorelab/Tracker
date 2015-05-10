@@ -3,6 +3,8 @@
  * GET home page.
  */
 
+ //Test commit
+
 exports.index = function(req, res){
   res.render('index', { heading: "Dashboard" });
 };
