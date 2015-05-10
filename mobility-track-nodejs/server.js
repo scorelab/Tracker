@@ -14,13 +14,17 @@
 
 var express = require('express')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , engine = require('ejs-locals');
 
 var app = express();
 
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
+
+  // use ejs-locals for all ejs templates:
+  app.engine('ejs', engine);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
   app.use(function(req, res, next) {
