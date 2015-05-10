@@ -4,13 +4,13 @@
  */
 
 exports.index = function(req, res){
-  res.render('index');
+  res.render('index', { heading: "Dashboard" });
 };
 
 exports.newtracker = function(req, res){
-  res.render('newtracker');
+  res.render('newtracker', { heading: "Add a new Tracker" });
 };
 
 exports.newresource = function(req, res){
-  res.render('newresource');
+  res.render('newresource', { heading: 'Add a new resource' });
 };
