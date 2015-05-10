@@ -3,8 +3,8 @@ module.exports = function(app){
 var tracker = require('./controllers/tracker');
 
 app.get('/', controllers.index);
-app.get('/newtracker', controllers.newtracker);
-app.get('/newresource', controllers.newresource);
+app.get('/tracker/new', controllers.newtracker);
+app.get('/resource/new', controllers.newresource);
 
 
 
