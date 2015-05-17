@@ -1,0 +1,20 @@
+{
+  "name": "mobility-track-nodejs",
+  "version": "0.2.0",
+  "homepage": "https://github.com/scorelab/Tracker",
+  "authors": [
+    "Scorelab <info@scorelab.org>"
+  ],
+  "description": "A platform for mobility tracking applications",
+  "main": "server.js",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
