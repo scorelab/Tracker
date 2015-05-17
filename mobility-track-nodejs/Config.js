@@ -17,4 +17,4 @@ module.exports = {
       name: 'Nodejs Express Mongoose Demo'
     }
   }
-}
+};

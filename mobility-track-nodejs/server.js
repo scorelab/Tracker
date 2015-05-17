@@ -12,10 +12,10 @@
  *
  */
 
-var express = require('express')
-  , http = require('http')
-  , path = require('path')
-  , engine = require('ejs-locals');
+var express = require('express'),
+  http = require('http'),
+  path = require('path'),
+  engine = require('ejs-locals');
 
 var app = express();
 
@@ -41,8 +41,8 @@ app.configure(function(){
 
 require('./db');
 
-var controllers = require('./controllers')
-  , tracker = require('./controllers/tracker')
+var controllers = require('./controllers'),
+  tracker = require('./controllers/tracker');
 
 app.configure('development', function(){
   app.use(express.errorHandler());
