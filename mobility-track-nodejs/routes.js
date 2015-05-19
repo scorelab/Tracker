@@ -21,4 +21,4 @@ app.get('/api/tracker/:id/delete', tracker.delete);
 //TrackerLocation
 app.get('/api/tracker/location/data', tracker.listLocationData);
 app.post('/api/tracker/location/data', tracker.addLocationData);
-}
+};
