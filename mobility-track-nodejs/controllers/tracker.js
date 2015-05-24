@@ -134,6 +134,14 @@ exports.get = function (req, res) {
        });
 };
 
+exports.findMac = function (req, res) {
+       Tracker.find({ "device":  {"mac": req.params.mac} }, function (err, rcd) {
+            if (err) console.log(err);
+            res.setHeader('content-type','application/json');
+            res.send(rcd);
+       });
+};
+
 exports.create = function (req, res) {
        var b = new Tracker(req.body);
        b.save(function (err, rcd) {
