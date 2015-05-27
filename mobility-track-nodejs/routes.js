@@ -17,6 +17,7 @@ app.post('/api/tracker/create', tracker.create);
 app.get('/api/tracker/:id', tracker.get);
 app.post('/api/tracker/:id/update', tracker.update);
 app.get('/api/tracker/:id/delete', tracker.delete);
+app.get('/api/tracker/findmac/:mac', tracker.findMac);
 
 //TrackerLocation
 app.get('/api/tracker/location/data', tracker.listLocationData);
