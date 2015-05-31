@@ -1,5 +1,6 @@
 package ogr.scorelab.ucsc.mobility_track;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -61,57 +62,26 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void send(View v) {
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    makeRequest("http://192.168.1.4:3000/api/tracker/location/data");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();*/
-
-    }
-
+    /* start background service */
     public void start(View v) {
         Intent intent = new Intent(this, LocationUpdates.class);
         startService(intent);
-        Notification notification = new Notification(android.R.drawable.sym_def_app_icon, "location service", System.currentTimeMillis());
-        Intent notificationIntent = new Intent(this, LocationUpdates.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        notification.setLatestEventInfo(this, "Tracker", "tracking location", pendingIntent);
 
     }
 
+    /* stop background service */
     public void stop(View v) {
         Intent intent = new Intent(this, LocationUpdates.class);
         stopService(intent);
     }
 
-    public static String makeRequest(String path)
-            throws Exception {
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        HttpPost httpost = new HttpPost(path);
-
-        JSONObject holder = new JSONObject();
-
-        String key = "key";
-        String data = "data";
-
-        holder.put(key, data);
-
-
-        StringEntity se = new StringEntity(holder.toString());
-        httpost.setEntity(se);
-        httpost.setHeader("Accept", "application/json");
-        httpost.setHeader("Content-type", "application/json");
-
-        ResponseHandler responseHandler = new BasicResponseHandler();
-        String response = (String) httpclient.execute(httpost, responseHandler);
-
-        return response;
+    private boolean isServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

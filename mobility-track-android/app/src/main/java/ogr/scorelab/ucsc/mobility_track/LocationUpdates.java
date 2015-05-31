@@ -9,7 +9,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
@@ -36,14 +35,12 @@ public class LocationUpdates extends Service {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
         foregroundStuff();
         initConnection();
-        Log.d("tracker", "service started");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         locationManager.removeUpdates(locationListener);
-        Log.d("tracker", "destroying service");
     }
 
     @Override
@@ -74,7 +71,7 @@ public class LocationUpdates extends Service {
         key = "status";
         holder.put(key, 1);
 
-        holder.put("timestamp", Long.valueOf("1422955082989"));
+        holder.put("timestamp", System.currentTimeMillis());
 
         JSONArray dataArray = new JSONArray();
         JSONObject dataObj = new JSONObject();
@@ -105,10 +102,8 @@ public class LocationUpdates extends Service {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    String res = null;
                     try {
-                        res = packAndPost(location);
-                        Log.d("tracker", "location changed " + res);
+                        packAndPost(location);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
