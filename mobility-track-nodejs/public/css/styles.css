@@ -1,3 +1,7 @@
 .dup-warn {
 	display: none;
 }
+
+.incorrect-mac {
+	border-color: #f56954;
+}
