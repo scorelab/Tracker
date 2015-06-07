@@ -1,3 +1,8 @@
 /iisnode/
 web.config
 node_modules
+*.log
+*.swp
+*.vim
+*~
+*.sublime*
