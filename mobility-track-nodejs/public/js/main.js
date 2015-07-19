@@ -34,3 +34,25 @@ function validateMAC() {
   return valid;
 }
 
+function initialize() {
+  var mylatlng = new google.maps.LatLng(6.9344, 79.8428);
+  var mapProp = {
+    center: mylatlng,
+    zoom:7,
+    mapTypeId:google.maps.MapTypeId.ROADMAP
+  };
+  var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+  $.get('api/tracker/locations').done(function(res){
+    for(var i=0; i<res.length; i++){
+      console.log(res[i]);
+      var latLng = new google.maps.LatLng(res[i].path[0], res[i].path[1]);
+      var marker = new google.maps.Marker({
+          position: latLng,
+          map: map
+      });
+    }
+  });
+
+}
+google.maps.event.addDomListener(window, 'load', initialize);
