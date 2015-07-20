@@ -34,3 +34,12 @@ function validateMAC() {
   return valid;
 }
 
+//function to create new resource
+
+function createResource(){
+
+	var resName = $('#resourceid').val();
+	var resCat = $('#resource_cat').val();
+
+	$.post('/api/resources/create', {name : resName, icon : resCat, marker : '', attributes : []});
+}
