@@ -1,33 +1,11 @@
 package ogr.scorelab.ucsc.mobility_track;
 
-import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -36,9 +14,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -66,7 +42,6 @@ public class MainActivity extends ActionBarActivity {
     public void start(View v) {
         Intent intent = new Intent(this, LocationUpdates.class);
         startService(intent);
-
     }
 
     /* stop background service */
@@ -75,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
         stopService(intent);
     }
 
-    private boolean isServiceRunning(Class<?> serviceClass) {
+    /*public boolean isServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
@@ -83,5 +58,5 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         return false;
-    }
+    }*/
 }
