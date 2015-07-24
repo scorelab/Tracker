@@ -35,7 +35,7 @@ function validateMAC() {
 }
 
 function initialize() {
-  var mylatlng = new google.maps.LatLng(6.9344, 79.8428);
+  var mylatlng = new google.maps.LatLng(6.9344, 79.8428); // Should find a way to automatically set the focus
   var mapProp = {
     center: mylatlng,
     zoom:7,
@@ -45,14 +45,27 @@ function initialize() {
 
   $.get('api/tracker/locations').done(function(res){
     for(var i=0; i<res.length; i++){
-      console.log(res[i]);
-      var latLng = new google.maps.LatLng(res[i].path[0], res[i].path[1]);
-      var marker = new google.maps.Marker({
-          position: latLng,
-          map: map
-      });
+      setMarker(res[i], map);
     }
   });
 
 }
+
+function setMarker(res, map){
+  getNameFromId(res._id, function(name){
+    var latLng = new google.maps.LatLng(res.path[0], res.path[1]);
+    var marker = new google.maps.Marker({
+      position: latLng,
+      map: map,
+      title: name
+    });
+  });
+}
+
+function getNameFromId(id, cb){
+  $.get('api/tracker/'+id).done(function(res){
+    cb(res[0].name);
+  });
+}
+
 google.maps.event.addDomListener(window, 'load', initialize);
