@@ -15,9 +15,11 @@ exports.create = function(req, res){
 	});
 };
 
+//update by mongodb id
+
 exports.update = function(req, res){
 	
-	resource.update({id : req.params.id}, req.body, {}, function (error, count){
+	resource.update({_id : req.params.id}, req.body, {}, function (error, count){
 
 		if (error) console.log(error);
 		res.setHeader('content-type', 'application/json');
@@ -25,10 +27,20 @@ exports.update = function(req, res){
 	});
 }; 
 
+//find resources by name
+
 exports.findByName = function(req, res){
 	resource.find({name : req.params.name}, function(err, rcd){
 		if(err) console.log(err);
 		res.setHeader('content-type', 'application/json');
 		res.send(rcd);
+	});
+};
+
+//delete resources by mongodb id
+
+exports.delete = function(req, res){
+	resources.remove({ _id : req.params.id }, function(err){
+		if(err) console.log(err);
 	});
 };
