@@ -26,6 +26,7 @@ public class LocationUpdates extends Service {
     private DBAccess dbAccess;
     private DefaultHttpClient mHttpClient;
     private HttpPost mHttpPost;
+    private String deviceId;
 
     @Override
     public void onCreate() {
@@ -37,9 +38,16 @@ public class LocationUpdates extends Service {
         locationListener = new MyLocationListener();
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
+
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        deviceId = intent.getStringExtra("deviceId");
         foregroundStuff();
         initConnection();
         new Thread(new DataTransferHandle()).start();
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -71,7 +79,7 @@ public class LocationUpdates extends Service {
         JSONObject holder = new JSONObject();
 
         String key = "id";
-        String data = "TRK456789";
+        String data = deviceId;
         holder.put(key, data);
 
         key = "status";

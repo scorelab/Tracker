@@ -13,6 +13,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -22,6 +25,8 @@ import java.io.InputStreamReader;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private String deviceId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +65,10 @@ public class MainActivity extends ActionBarActivity {
 
     /* start background service */
     public void start(View v) {
+        if (deviceId == null)
+            return;
         Intent intent = new Intent(this, LocationUpdates.class);
+        intent.putExtra("deviceId", deviceId);
         startService(intent);
     }
 
@@ -107,6 +115,13 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            try {
+                JSONArray jsonArray = new JSONArray(s);
+                JSONObject jsonObject = jsonArray.getJSONObject(0);
+                deviceId = jsonObject.getString("_id");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         private String inputStreamToString (InputStream in) throws IOException {
