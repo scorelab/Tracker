@@ -62,7 +62,7 @@ public class LocationUpdates extends Service {
     
     private void initConnection () {
         mHttpClient = new DefaultHttpClient();
-        mHttpPost = new HttpPost(Constants.SERVER_URL);
+        mHttpPost = new HttpPost(Constants.SERVER + Constants.DATA_POST_URL);
     }
 
     public boolean packAndPost(Location2 location2)
