@@ -41,7 +41,7 @@ function initialize() {
     zoom:7,
     mapTypeId:google.maps.MapTypeId.ROADMAP
   };
-  var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+  var map=new google.maps.Map($("#googleMap")[0], mapProp);
 
   $.get('api/tracker/locations').done(function(res){
     for(var i=0; i<res.length; i++){
