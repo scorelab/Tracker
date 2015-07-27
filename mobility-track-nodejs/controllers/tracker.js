@@ -40,7 +40,7 @@ exports.locations = function (req, res) {
 };
 
 exports.locationOf = function (req, res) {
-	   Tracker.find({ "id":  req.params.id }, function (err, data) {
+	   Tracker.find({ "_id":  req.params.id }, function (err, data) {
             if (err) { console.log(err); res.send([]); return; } 
             data.forEach(function(entry) {
 				var tracker = entry.toObject();
@@ -127,7 +127,7 @@ exports.index = function (req, res) {
 };
 
 exports.get = function (req, res) {
-       Tracker.find({ "id":  req.params.id }, function (err, rcd) {
+       Tracker.find({ "_id":  req.params.id }, function (err, rcd) {
             if (err) console.log(err);
             res.setHeader('content-type','application/json');
             res.send(rcd);

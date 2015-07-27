@@ -5,3 +5,8 @@
 .incorrect-mac {
 	border-color: #f56954;
 }
+
+#googleMap {
+	width:100%;
+	height:500px;
+}
