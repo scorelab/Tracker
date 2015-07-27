@@ -23,6 +23,7 @@ public class LocationUpdates extends Service {
     public LocationManager locationManager;
     public MyLocationListener locationListener;
 
+    private DBAccess dbAccess;
     private DefaultHttpClient mHttpClient;
     private HttpPost mHttpPost;
 
@@ -30,11 +31,15 @@ public class LocationUpdates extends Service {
     public void onCreate() {
         super.onCreate();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        dbAccess = new DBAccess(this);
+        dbAccess.open();
+
         locationListener = new MyLocationListener();
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
         foregroundStuff();
         initConnection();
+        new Thread(new DataTransferHandle()).start();
     }
 
     @Override
@@ -49,6 +54,7 @@ public class LocationUpdates extends Service {
     }
 
 
+    // notification
     protected void foregroundStuff() {
         Notification notification = new Notification();
         startForeground(1, notification);
@@ -56,10 +62,10 @@ public class LocationUpdates extends Service {
     
     private void initConnection () {
         mHttpClient = new DefaultHttpClient();
-        mHttpPost = new HttpPost(Constants.SERVER_PATH);
+        mHttpPost = new HttpPost(Constants.SERVER_URL);
     }
 
-    public String packAndPost(Location location)
+    public boolean packAndPost(Location2 location2)
             throws Exception {
 
         JSONObject holder = new JSONObject();
@@ -71,18 +77,17 @@ public class LocationUpdates extends Service {
         key = "status";
         holder.put(key, 1);
 
-        holder.put("timestamp", System.currentTimeMillis());
+        holder.put("timestamp", location2.timestamp);
 
         JSONArray dataArray = new JSONArray();
         JSONObject dataObj = new JSONObject();
-        dataObj.put("latitude", location.getLatitude());
-        dataObj.put("longitude", location.getLongitude());
-        dataObj.put("direction", location.getBearing());
-        dataObj.put("speed", location.getSpeed());
-        dataObj.put("timestamp", System.currentTimeMillis());
+        dataObj.put("latitude", location2.latitude);
+        dataObj.put("longitude", location2.longitude);
+        dataObj.put("direction", location2.direction);
+        dataObj.put("speed", location2.speed);
+        dataObj.put("timestamp", location2.timestamp);
         dataArray.put(dataObj);
         holder.put("data", dataArray);
-
 
         StringEntity se = new StringEntity(holder.toString());
         mHttpPost.setEntity(se);
@@ -90,9 +95,12 @@ public class LocationUpdates extends Service {
         mHttpPost.setHeader("Content-type", "application/json");
 
         ResponseHandler responseHandler = new BasicResponseHandler();
-        String response = (String) mHttpClient.execute(mHttpPost, responseHandler);
-
-        return response;
+        try {
+            mHttpClient.execute(mHttpPost, responseHandler);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     class MyLocationListener implements LocationListener {
@@ -102,11 +110,7 @@ public class LocationUpdates extends Service {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        packAndPost(location);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    dbAccess.push(location);
                 }
             }).start();
         }
@@ -124,6 +128,36 @@ public class LocationUpdates extends Service {
         @Override
         public void onProviderDisabled(String provider) {
 
+        }
+    }
+
+    private class DataTransferHandle implements Runnable {
+
+        @Override
+        public void run() {
+            Location2 l2;
+            while (true) {
+                l2 = dbAccess.get();
+                if (l2 == null) {   // if db is empty
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        break;
+                    }
+                    continue;
+                }
+                try {
+                    if (packAndPost(l2)) {  // if data posted to the server successfully
+                        dbAccess.delete(l2.timestamp);
+                    } else {
+                        Thread.sleep(1000);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
         }
     }
 }
