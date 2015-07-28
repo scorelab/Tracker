@@ -7,7 +7,6 @@ var mongoose = require('mongoose')
  */
 
 var TrackerSchema = new Schema({
-  id : { type : String },
   status : { type : Number }, // 1: "Active", 0: "Inactive"
   name : {type : String },
   device : {
