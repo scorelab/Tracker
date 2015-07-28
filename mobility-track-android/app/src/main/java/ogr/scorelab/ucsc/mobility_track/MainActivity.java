@@ -1,6 +1,8 @@
 package ogr.scorelab.ucsc.mobility_track;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -8,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -26,6 +30,8 @@ import java.io.InputStreamReader;
 
 public class MainActivity extends ActionBarActivity {
 
+    private TextView txtMac, txtDeviceId;
+
     private String deviceId = null;
 
     @Override
@@ -33,9 +39,18 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        txtMac = (TextView) findViewById(R.id.txtMac);
+        txtDeviceId = (TextView) findViewById(R.id.txtDeviceId);
+
         try {
             String deviceMAC = getDeviceMAC();
-            new GetDeviceConfigs().execute(deviceMAC);
+            if (deviceMAC == null) {
+                txtMac.setText("Device don't have mac address or wi-fi is disabled");
+            }
+            else {
+                txtMac.setText(deviceMAC);
+                new GetDeviceConfigs().execute(deviceMAC);
+            }
         } catch (IOException e) {
             Log.e("TRACKER", e.getLocalizedMessage());
         }
@@ -65,8 +80,10 @@ public class MainActivity extends ActionBarActivity {
 
     /* start background service */
     public void start(View v) {
-        if (deviceId == null)
+        if (deviceId == null) {
+            Toast.makeText(this, "Device unregistered", Toast.LENGTH_LONG).show();
             return;
+        }
         Intent intent = new Intent(this, LocationUpdates.class);
         intent.putExtra("deviceId", deviceId);
         startService(intent);
@@ -79,12 +96,14 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private String getDeviceMAC() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(Constants.RMNET0_ADDRESS_FILE_PATH));
-        String mac = "";
-        for (String block : reader.readLine().split(":")) {
-            mac += block.toUpperCase();
+        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager.getConnectionInfo().getMacAddress() == null) {
+            return null;
         }
-        reader.close();
+        
+        String mac = "";
+        for (String block : wifiManager.getConnectionInfo().getMacAddress().split(":"))
+            mac += block.toUpperCase();
         return mac;
     }
 
@@ -115,10 +134,15 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            if (s == null || s.isEmpty()) {
+                txtDeviceId.setText("Device unregistered");
+                return;
+            }
             try {
                 JSONArray jsonArray = new JSONArray(s);
                 JSONObject jsonObject = jsonArray.getJSONObject(0);
                 deviceId = jsonObject.getString("_id");
+                txtDeviceId.setText(deviceId);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
