@@ -22,11 +22,11 @@
     "ejs-locals": "^1.0.2"
   },
   "devDependencies": {
-    "grunt": "~0.4.5",
-    "grunt-contrib-watch": "~0.5.3",
+    "grunt": "^0.4.5",
+    "grunt-concurrent": "~0.4.3",
     "grunt-contrib-jshint": "~0.10.0",
-    "grunt-nodemon": "~0.2.0",
-    "grunt-concurrent": "~0.4.3"
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-nodemon": "~0.2.0"
   },
   "noAnalyze": true,
   "license": "Apache",

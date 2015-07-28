@@ -34,6 +34,16 @@ function validateMAC() {
   return valid;
 }
 
+//function to create new resource
+
+function createResource(){
+
+	var resName = $('#resourceid').val();
+	var resCat = $('#resource_cat').val();
+
+	$.post('/api/resources/create', {name : resName, icon : resCat, marker : '', attributes : []});
+}
+
 function initialize() {
   var mylatlng = new google.maps.LatLng(6.9344, 79.8428); // Should find a way to automatically set the focus
   var mapProp = {
@@ -69,3 +79,4 @@ function getNameFromId(id, cb){
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
