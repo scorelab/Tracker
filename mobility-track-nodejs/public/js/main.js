@@ -45,13 +45,8 @@ function createResource(){
 }
 
 function initialize() {
-  var mylatlng = new google.maps.LatLng(6.9344, 79.8428); // Should find a way to automatically set the focus
-  var mapProp = {
-    center: mylatlng,
-    zoom:7,
-    mapTypeId:google.maps.MapTypeId.ROADMAP
-  };
-  var map=new google.maps.Map($("#googleMap")[0], mapProp);
+  
+  map = initializeMap();
 
   $.get('api/tracker/locations').done(function(res){
     for(var i=0; i<res.length; i++){
@@ -72,10 +67,62 @@ function setMarker(res, map){
   });
 }
 
+function setPath(res, map){
+	getNameFromId(res.id, function(name){
+	var latLng = new google.maps.LatLng(res.data[0], res.data[1]);
+    var marker = new google.maps.Marker({
+      position: latLng,
+      map: map,
+      title: name
+    });
+  });
+}
+
 function getNameFromId(id, cb){
   $.get('api/tracker/'+id).done(function(res){
-    cb(res[0].name);
+  	cb(res[0].name);
   });
+}
+
+function initializeMap(){
+
+  var mylatlng = new google.maps.LatLng(6.9344, 79.8428); // Should find a way to automatically set the focus
+  var mapProp = {
+    center: mylatlng,
+    zoom:7,
+    mapTypeId:google.maps.MapTypeId.ROADMAP
+  };
+
+  var map = new google.maps.Map($("#googleMap")[0], mapProp);
+
+  return map;  
+}
+
+function drawTrails(){
+
+	map = initializeMap();
+
+	var pathCoords = [];
+
+	$.get('/api/tracker/location/data').done(function(res){
+		for(var i = 0; i < res.length; i++){
+			setPath(res[i], map);
+			pathCoords.push(new google.maps.LatLng(res[i].data[0], res[i].data[1]));
+		}
+
+		var path = new google.maps.Polyline({
+			path : pathCoords,
+			geodesic : true,
+			strokeColor: '#0000FF',
+			strokeOpacity: 1.0,
+			strokeWeight: 2
+	  	});
+
+		path.setMap(map);
+
+	});
+	
+	
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);

@@ -183,6 +183,7 @@ exports.listLocationData = function (req, res) {
             res.send(data);
        }); 
 };
+
 exports.addLocationData = function (req, res) {
        var tl = new TrackerLocations(req.body);
        tl.save(function (err, rcd) {
@@ -191,4 +192,13 @@ exports.addLocationData = function (req, res) {
             res.send(rcd);
        });
 };
+
+exports.listLocationsById = function(req, res){
+
+  TrackerLocations.find({"id" : req.params.id}, function(err, rcd){
+    if(err) console.log(err);
+    res.setHeader('content-type', 'application/json');
+    res.send(rcd);
+  });
+}
 
