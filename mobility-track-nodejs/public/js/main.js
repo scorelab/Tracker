@@ -18,6 +18,7 @@ function createTracker() {
   }
 }
 
+
 function validateMAC() {
   var regex = /^[0-9A-Fa-f]{2}$/;
   var valid = true;
@@ -53,7 +54,7 @@ function initialize() {
       setMarker(res[i], map);
     }
   });
-
+	  
 }
 
 function setMarker(res, map){
@@ -98,13 +99,18 @@ function initializeMap(){
   return map;  
 }
 
-function drawTrails(){
+function drawTrails(id){
 
 	map = initializeMap();
 
-	var pathCoords = [];
+	id = id || 'ALL';
 
-	$.get('/api/tracker/location/data').done(function(res){
+	var pathCoords = [];
+	var requestStr = '/api/tracker/location/data';
+
+	if (id !== 'ALL') requestStr = '/api/tracker/' + id + '/location/data';
+
+	$.get(requestStr).done(function(res){
 		for(var i = 0; i < res.length; i++){
 			setPath(res[i], map);
 			pathCoords.push(new google.maps.LatLng(res[i].data[0], res[i].data[1]));
@@ -125,5 +131,33 @@ function drawTrails(){
 	
 }
 
+function listTrackers(){
+
+    $.get('/api/trackers').done(function(res){
+        
+        var list = '';
+
+        for(var i = 0; i < res.length; i++){
+        	list += '<li> <a href= "/api/tracker/' + res[i]._id + '/location/data">' + res[i].name + '</a> </li>';
+        }
+
+    	$('.trackers').html(list);
+
+	});
+}
+
+
+function bindEvents(){
+	$('document').ready(function(){
+
+	$('.col-xs-2').keyup(function(){
+		if ($(this).children().val().length == 2){
+    			$(this).next('.col-xs-2').children().focus();
+    		}    
+		});
+	});
+}
+
+bindEvents();
 google.maps.event.addDomListener(window, 'load', initialize);
 
