@@ -43,8 +43,8 @@ require('./db');
 
 var controllers = require('./controllers'),
   tracker = require('./controllers/tracker');
-  //resources = require('./controllers/resources');
-
+  
+  
 app.configure('development', function(){
   app.use(express.errorHandler());
 });

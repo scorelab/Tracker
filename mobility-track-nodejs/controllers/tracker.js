@@ -134,6 +134,14 @@ exports.get = function (req, res) {
        });
 };
 
+exports.getTrackers = function(req, res){
+  Tracker.find(function(err, data){
+    if(err) console.log(err);
+    res.setHeader('content-type','application'/'json');
+    res.send(data);
+  });  
+};
+
 exports.findMac = function (req, res) {
        Tracker.find({ "device":  {"mac": req.params.mac} }, function (err, rcd) {
             if (err) console.log(err);
@@ -183,6 +191,7 @@ exports.listLocationData = function (req, res) {
             res.send(data);
        }); 
 };
+
 exports.addLocationData = function (req, res) {
        var tl = new TrackerLocations(req.body);
        tl.save(function (err, rcd) {
@@ -191,4 +200,13 @@ exports.addLocationData = function (req, res) {
             res.send(rcd);
        });
 };
+
+exports.listLocationsById = function(req, res){
+
+  TrackerLocations.find({"id" : req.params.id}, function(err, rcd){
+    if(err) console.log(err);
+    res.setHeader('content-type', 'application/json');
+    res.send(rcd);
+  });
+}
 

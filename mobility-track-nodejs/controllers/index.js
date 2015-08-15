@@ -16,3 +16,7 @@ exports.newtracker = function(req, res){
 exports.newresource = function(req, res){
   res.render('newresource', { heading: 'Add a new resource' });
 };
+
+exports.trails = function(req, res){
+	res.render('trails', {heading: 'Path Analyzer', id: req.params.id});
+};
