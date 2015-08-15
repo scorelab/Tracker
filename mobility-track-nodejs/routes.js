@@ -6,7 +6,7 @@ var resources = require('./controllers/resources');
 app.get('/', controllers.index);
 app.get('/tracker/new', controllers.newtracker);
 app.get('/resource/new', controllers.newresource);
-app.get('/trails', controllers.trails);
+app.get('/trails/:id', controllers.trails);
 
 //Tracker
 app.get('/api/tracker/locations', tracker.locations);
@@ -18,6 +18,7 @@ app.get('/api/tracker/:id', tracker.get);
 app.post('/api/tracker/:id/update', tracker.update);
 app.get('/api/tracker/:id/delete', tracker.delete);
 app.get('/api/tracker/findmac/:mac', tracker.findMac);
+app.get('/api/trackers', tracker.getTrackers);
 
 //TrackerLocation
 app.get('/api/tracker/location/data', tracker.listLocationData);

@@ -49,12 +49,17 @@ function initialize() {
   
   map = initializeMap();
 
-  $.get('api/tracker/locations').done(function(res){
-    for(var i=0; i<res.length; i++){
-      setMarker(res[i], map);
-    }
-  });
-	  
+  var header = $('.content-header > h1').text();
+
+  if(/Dashboard/.test(header)){    
+    drawLocations(map);
+  }
+  else if(/Path Analyzer/.test(header)){
+    var id = $('.content-header').attr('trackerid');
+    drawTrails(map, id);
+    
+  }
+
 }
 
 function setMarker(res, map){
@@ -80,7 +85,7 @@ function setPath(res, map){
 }
 
 function getNameFromId(id, cb){
-  $.get('api/tracker/'+id).done(function(res){
+  $.get('/api/tracker/'+id).done(function(res){
   	cb(res[0].name);
   });
 }
@@ -99,16 +104,11 @@ function initializeMap(){
   return map;  
 }
 
-function drawTrails(id){
-
-	map = initializeMap();
-
-	id = id || 'ALL';
+function drawTrails(map, id){
 
 	var pathCoords = [];
-	var requestStr = '/api/tracker/location/data';
 
-	if (id !== 'ALL') requestStr = '/api/tracker/' + id + '/location/data';
+	requestStr = '/api/tracker/' + id + '/location/data';
 
 	$.get(requestStr).done(function(res){
 		for(var i = 0; i < res.length; i++){
@@ -126,38 +126,46 @@ function drawTrails(id){
 
 		path.setMap(map);
 
-	});
-	
-	
+	});	
+}
+
+function drawLocations(map){
+
+  $.get('/api/tracker/locations').done(function(res){
+    for(var i=0; i<res.length; i++){
+      setMarker(res[i], map);
+    }
+  });
+
 }
 
 function listTrackers(){
 
     $.get('/api/trackers').done(function(res){
-        
+
         var list = '';
 
         for(var i = 0; i < res.length; i++){
-        	list += '<li> <a href= "/api/tracker/' + res[i]._id + '/location/data">' + res[i].name + '</a> </li>';
+        	list += '<li> <a id="trail" href="/trails/' + res[i]._id + '">' + res[i].name + '</a> </li>';        	
         }
 
-    	$('.trackers').html(list);
+    	$('#trackers').html(list);
 
-	});
+    });
+    	
 }
 
-
-function bindEvents(){
-	$('document').ready(function(){
+$('document').ready(function(){
 
 	$('.col-xs-2').keyup(function(){
 		if ($(this).children().val().length == 2){
     			$(this).next('.col-xs-2').children().focus();
     		}    
-		});
-	});
-}
+	 });
 
-bindEvents();
+});
+
+listTrackers(); 
+
 google.maps.event.addDomListener(window, 'load', initialize);
 

@@ -18,5 +18,5 @@ exports.newresource = function(req, res){
 };
 
 exports.trails = function(req, res){
-	res.render('trails', {heading: 'Path Analyzer'});
+	res.render('trails', {heading: 'Path Analyzer', id: req.params.id});
 };

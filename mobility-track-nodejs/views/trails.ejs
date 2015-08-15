@@ -1,9 +1,9 @@
 <% layout('layout') -%>
 
-<section class="content-header">
+<section class="content-header" trackerid= <%= id%> >
     <h1>
         <%= heading%>
-        <small>Control panel</small>
+        <small> Control Panel </small>
     </h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -13,13 +13,7 @@
 
 <!-- Main content -->
 <section class="content">
-	<script type="text/javascript">
-		window.onload = function(){
-			drawTrails();
-		};
-	</script>
-
-    <div id="googleMap" ></div>
-
+   <div id="googleMap" ></div>
 </section>
 <!-- /.content -->
+    
