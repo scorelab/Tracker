@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc overview
- * @name webappApp
+ * @name TrackerwebApp
  * @description
- * # webappApp
+ * # TrackerwebApp
  *
  * Main module of the application.
  */
 angular
-  .module('webappApp', [
+  .module('TrackerwebApp', [
     'ngAnimate',
     'ngAria',
     'ngCookies',
@@ -28,6 +28,11 @@ angular
       })
       .when('/about', {
         templateUrl: 'views/about.html',
+        controller: 'AboutCtrl',
+        controllerAs: 'about'
+      })
+	  .when('/header', {
+        templateUrl: 'views/header.html',
         controller: 'AboutCtrl',
         controllerAs: 'about'
       })
