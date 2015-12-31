@@ -63,30 +63,43 @@ function initialize() {
 }
 
 function setMarker(res, map){
-  getNameFromId(res._id, function(name){
+  getTrackerFromId(res._id, function(tracker){
+    var name = tracker.name;
     var latLng = markerCoords(res);
     var marker = new google.maps.Marker({
       position: latLng,
       map: map,
       title: name
     });
-  });
-}
-
-function setPath(res, map){
-	getNameFromId(res.id, function(name){
-	var latLng = new google.maps.LatLng(res.data[0], res.data[1]);
-    var marker = new google.maps.Marker({
-      position: latLng,
-      map: map,
-      title: name
+    var content = '<h1>' + name + '</h1>' +
+        '<p>Last seen: ' + new Date(res.timestamp).toLocaleString() + '</p>' +
+        '<p>Device ID: ' + tracker._id + '</p>';
+    if (tracker.device && tracker.device.mac) {
+      content += '<p>MAC: ' + tracker.device.mac + '</p>';
+    }
+    var infoWindow = new google.maps.InfoWindow({
+      content: content
+    });
+    marker.addListener('click', function() {
+      infoWindow.open(map, marker);
     });
   });
 }
 
-function getNameFromId(id, cb){
+function setPath(res, map){
+  getTrackerFromId(res.id, function(tracker){
+    var latLng = new google.maps.LatLng(res.data[0], res.data[1]);
+    var marker = new google.maps.Marker({
+      position: latLng,
+      map: map,
+      title: tracker.name
+    });
+  });
+}
+
+function getTrackerFromId(id, cb){
   $.get('/api/tracker/'+id).done(function(res){
-  	cb(res[0].name);
+    cb(res[0]);
   });
 }
 
@@ -137,12 +150,10 @@ function drawLocations(map){
 
   $.get('/api/tracker/locations').done(function(res){
     var bounds = new google.maps.LatLngBounds();
-    console.log("Got locations: ", res);
     for(var i=0; i<res.length; i++){
       setMarker(res[i], map);
       bounds.extend(markerCoords(res[i]));
     }
-    console.log("Fitting map to bounds: ", bounds);
     map.fitBounds(bounds);
   });
 
