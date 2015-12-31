@@ -64,7 +64,7 @@ function initialize() {
 
 function setMarker(res, map){
   getNameFromId(res._id, function(name){
-    var latLng = new google.maps.LatLng(res.path[0], res.path[1]);
+    var latLng = markerCoords(res);
     var marker = new google.maps.Marker({
       position: latLng,
       map: map,
@@ -129,12 +129,21 @@ function drawTrails(map, id){
 	});	
 }
 
+function markerCoords(res) {
+  return new google.maps.LatLng(res.path[res.path.length - 1].latitude, res.path[res.path.length - 1].longitude);
+}
+
 function drawLocations(map){
 
   $.get('/api/tracker/locations').done(function(res){
+    var bounds = new google.maps.LatLngBounds();
+    console.log("Got locations: ", res);
     for(var i=0; i<res.length; i++){
       setMarker(res[i], map);
+      bounds.extend(markerCoords(res[i]));
     }
+    console.log("Fitting map to bounds: ", bounds);
+    map.fitBounds(bounds);
   });
 
 }
