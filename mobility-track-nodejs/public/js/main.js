@@ -62,17 +62,19 @@ function initialize() {
 
 }
 
-function setMarker(res, map){
+function setMarker(res, map, opts) {
+  opts = opts || {};
   getTrackerFromId(res.id || res._id, function(tracker){
     var name = tracker.name;
     var latLng = markerCoords(res);
     var marker = new google.maps.Marker({
       position: latLng,
       map: map,
-      title: name
+      title: name,
+      label: opts.label
     });
     var content = '<h1>' + name + '</h1>' +
-        '<p>Last seen: ' + new Date(res.timestamp).toLocaleString() + '</p>' +
+        '<p>' + (opts.lastseen || 'Last seen') + ': ' + new Date(res.timestamp).toLocaleString() + '</p>' +
         '<p>Device ID: ' + tracker._id + '</p>';
     if (tracker.device && tracker.device.mac) {
       content += '<p>MAC: ' + tracker.device.mac + '</p>';
@@ -115,15 +117,15 @@ function drawTrails(map, id){
 	$.get(requestStr).done(function(res){
 		var bounds = new google.maps.LatLngBounds();
 		for(var i = 0; i < res.length; i++){
+			if (i === 0 || i === res.length - 1) {
+				// add markers for the begin and end of the path, marked with characters
+				setMarker(res[i], map, {lastseen: 'Time', label: (i === 0 ? 'B' : 'E')});
+			}
 			for (var j = 0; j < res[i].data.length; j++) {
 				var coords = new google.maps.LatLng(res[i].data[j].latitude, res[i].data[j].longitude);
 				pathCoords.push(coords);
 				bounds.extend(coords);
 			}
-		}
-		// set marker to last position of tracker
-		if (res.length > 0) {
-			setMarker(res[res.length-1], map);
 		}
 		map.fitBounds(bounds);
 
