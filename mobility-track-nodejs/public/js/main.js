@@ -115,11 +115,15 @@ function drawTrails(map, id){
 	requestStr = '/api/tracker/' + id + '/location/data';
 
 	$.get(requestStr).done(function(res){
+		// sort positions by date, ascending
+		res.sort(function(a,b) {
+			return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+		});
 		var bounds = new google.maps.LatLngBounds();
 		for(var i = 0; i < res.length; i++){
 			if (i === 0 || i === res.length - 1) {
 				// add markers for the begin and end of the path, marked with characters
-				setMarker(res[i], map, {lastseen: 'Time', label: (i === 0 ? 'B' : 'E')});
+				setMarker(res[i], map, {lastseen: 'Time', label: (i === 0 ? 'A' : 'B')});
 			}
 			for (var j = 0; j < res[i].data.length; j++) {
 				var coords = new google.maps.LatLng(res[i].data[j].latitude, res[i].data[j].longitude);
