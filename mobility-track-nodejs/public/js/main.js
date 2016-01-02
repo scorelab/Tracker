@@ -62,17 +62,19 @@ function initialize() {
 
 }
 
-function setMarker(res, map){
-  getTrackerFromId(res._id, function(tracker){
+function setMarker(res, map, opts) {
+  opts = opts || {};
+  getTrackerFromId(res.id || res._id, function(tracker){
     var name = tracker.name;
     var latLng = markerCoords(res);
     var marker = new google.maps.Marker({
       position: latLng,
       map: map,
-      title: name
+      title: name,
+      label: opts.label
     });
     var content = '<h1>' + name + '</h1>' +
-        '<p>Last seen: ' + new Date(res.timestamp).toLocaleString() + '</p>' +
+        '<p>' + (opts.lastseen || 'Last seen') + ': ' + new Date(res.timestamp).toLocaleString() + '</p>' +
         '<p>Device ID: ' + tracker._id + '</p>';
     if (tracker.device && tracker.device.mac) {
       content += '<p>MAC: ' + tracker.device.mac + '</p>';
@@ -82,17 +84,6 @@ function setMarker(res, map){
     });
     marker.addListener('click', function() {
       infoWindow.open(map, marker);
-    });
-  });
-}
-
-function setPath(res, map){
-  getTrackerFromId(res.id, function(tracker){
-    var latLng = new google.maps.LatLng(res.data[0], res.data[1]);
-    var marker = new google.maps.Marker({
-      position: latLng,
-      map: map,
-      title: tracker.name
     });
   });
 }
@@ -124,10 +115,23 @@ function drawTrails(map, id){
 	requestStr = '/api/tracker/' + id + '/location/data';
 
 	$.get(requestStr).done(function(res){
+		// sort positions by date, ascending
+		res.sort(function(a,b) {
+			return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+		});
+		var bounds = new google.maps.LatLngBounds();
 		for(var i = 0; i < res.length; i++){
-			setPath(res[i], map);
-			pathCoords.push(new google.maps.LatLng(res[i].data[0], res[i].data[1]));
+			if (i === 0 || i === res.length - 1) {
+				// add markers for the begin and end of the path, marked with characters
+				setMarker(res[i], map, {lastseen: 'Time', label: (i === 0 ? 'A' : 'B')});
+			}
+			for (var j = 0; j < res[i].data.length; j++) {
+				var coords = new google.maps.LatLng(res[i].data[j].latitude, res[i].data[j].longitude);
+				pathCoords.push(coords);
+				bounds.extend(coords);
+			}
 		}
+		map.fitBounds(bounds);
 
 		var path = new google.maps.Polyline({
 			path : pathCoords,
@@ -143,7 +147,8 @@ function drawTrails(map, id){
 }
 
 function markerCoords(res) {
-  return new google.maps.LatLng(res.path[res.path.length - 1].latitude, res.path[res.path.length - 1].longitude);
+  var path = res.path || res.data;
+  return new google.maps.LatLng(path[path.length - 1].latitude, path[path.length - 1].longitude);
 }
 
 function drawLocations(map){
