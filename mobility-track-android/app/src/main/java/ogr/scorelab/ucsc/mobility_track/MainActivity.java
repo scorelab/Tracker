@@ -42,6 +42,10 @@ public class MainActivity extends ActionBarActivity {
         txtMac = (TextView) findViewById(R.id.txtMac);
         txtDeviceId = (TextView) findViewById(R.id.txtDeviceId);
 
+        getDeviceId();
+    }
+
+    private void getDeviceId() {
         try {
             String deviceMAC = getDeviceMAC();
             if (deviceMAC == null) {
@@ -75,13 +79,18 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
 
+        if(id == R.id.action_refresh_device_id) {
+            getDeviceId();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     /* start background service */
     public void start(View v) {
         if (deviceId == null) {
-            Toast.makeText(this, "Device unregistered", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.device_unregistered, Toast.LENGTH_LONG).show();
             return;
         }
         Intent intent = new Intent(this, LocationUpdates.class);
@@ -135,11 +144,15 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if (s == null || s.isEmpty()) {
-                txtDeviceId.setText("Device unregistered");
+                txtDeviceId.setText(R.string.device_unregistered);
                 return;
             }
             try {
                 JSONArray jsonArray = new JSONArray(s);
+                if(jsonArray.length() == 0) {
+                    txtDeviceId.setText(R.string.device_unregistered);
+                    return;
+                }
                 JSONObject jsonObject = jsonArray.getJSONObject(0);
                 deviceId = jsonObject.getString("_id");
                 txtDeviceId.setText(deviceId);
