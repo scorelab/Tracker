@@ -188,7 +188,7 @@ public class LocationUpdates extends Service {
         public void run() {
             Location2 l2;
             while (true) {
-                
+
                 l2 = dbAccess.get();
                 if (l2 == null) {   // if db is empty
                     if (!isThisActive)
