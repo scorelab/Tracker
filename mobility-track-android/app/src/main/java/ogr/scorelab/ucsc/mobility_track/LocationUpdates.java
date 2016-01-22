@@ -90,7 +90,7 @@ public class LocationUpdates extends Service {
         startForeground(1, notification);
     }
     
-    private void initConnection () {
+    private boolean initConnection () {
         try {
             URL url = new URL("http",Constants.SERVER,3000,Constants.DATA_POST_URL);
             httpConnection = (HttpURLConnection) url.openConnection();
@@ -100,8 +100,10 @@ public class LocationUpdates extends Service {
             httpConnection.setDoOutput(true);
 
             httpConnection.connect();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -110,7 +112,8 @@ public class LocationUpdates extends Service {
         boolean ret = true; // Return value
 
         // Make connection to the server here.
-        initConnection();
+        if (!initConnection())
+            return false;
 
         JSONObject holder = new JSONObject();
 
