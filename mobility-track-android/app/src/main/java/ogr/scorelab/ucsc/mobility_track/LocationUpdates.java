@@ -12,6 +12,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -141,6 +142,7 @@ public class LocationUpdates extends Service {
             // Data send failed
             ret = false;
         } finally {
+            Log.d("TRACKER",httpConnection.getResponseMessage());
             httpConnection.disconnect();
         }
         return ret;
