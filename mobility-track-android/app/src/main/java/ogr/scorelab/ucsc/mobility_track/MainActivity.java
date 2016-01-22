@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,22 +13,19 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private TextView txtMac, txtDeviceId;
 
@@ -119,14 +116,17 @@ public class MainActivity extends ActionBarActivity {
 
     private class GetDeviceConfigs extends AsyncTask<String, Void, String> {
 
+        private HttpURLConnection httpConnection;
+
         @Override
         protected String doInBackground(String... params) {
-            HttpClient httpClient = new DefaultHttpClient();
             try {
-                HttpResponse httpResponse = httpClient.execute(new HttpGet(Constants.SERVER + Constants.GET_DEVICE_ID_URL + params[0]));
-                InputStream inputStream = httpResponse.getEntity().getContent();
-                return inputStreamToString(inputStream);
+                URL url = new URL("http",Constants.SERVER,3000,Constants.GET_DEVICE_ID_URL+params[0]);
+                httpConnection = (HttpURLConnection) url.openConnection();
+                httpConnection.setDoInput(true);
+                return inputStreamToString(httpConnection.getInputStream());
             } catch (IOException e) {
+                e.printStackTrace();
                 return null;
             }
         }
@@ -134,17 +134,21 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (s == null || s.isEmpty()) {
-                txtDeviceId.setText("Device unregistered");
-                return;
-            }
             try {
-                JSONArray jsonArray = new JSONArray(s);
-                JSONObject jsonObject = jsonArray.getJSONObject(0);
-                deviceId = jsonObject.getString("_id");
-                txtDeviceId.setText(deviceId);
-            } catch (JSONException e) {
-                e.printStackTrace();
+                if (s == null || s.isEmpty()) {
+                    txtDeviceId.setText("Device unregistered");
+                    return;
+                }
+                try {
+                    JSONArray jsonArray = new JSONArray(s);
+                    JSONObject jsonObject = jsonArray.getJSONObject(0);
+                    deviceId = jsonObject.getString("_id");
+                    txtDeviceId.setText(deviceId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                httpConnection.disconnect();
             }
         }
 
@@ -155,6 +159,7 @@ public class MainActivity extends ActionBarActivity {
             String line;
             while ((line = bufferedReader.readLine()) != null)
                 ret += line;
+            bufferedReader.close();
             in.close();
 
             return ret;

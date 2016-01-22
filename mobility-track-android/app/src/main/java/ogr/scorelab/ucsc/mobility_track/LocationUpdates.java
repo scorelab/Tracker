@@ -1,22 +1,25 @@
 package ogr.scorelab.ucsc.mobility_track;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class LocationUpdates extends Service {
 
@@ -24,8 +27,7 @@ public class LocationUpdates extends Service {
     public MyLocationListener locationListener;
 
     private DBAccess dbAccess;
-    private DefaultHttpClient mHttpClient;
-    private HttpPost mHttpPost;
+    private HttpURLConnection httpConnection;
     private String deviceId;
 
     @Override
@@ -36,6 +38,16 @@ public class LocationUpdates extends Service {
         dbAccess.open();
 
         locationListener = new MyLocationListener();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
 
@@ -45,7 +57,6 @@ public class LocationUpdates extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         deviceId = intent.getStringExtra("deviceId");
         foregroundStuff();
-        initConnection();
         new Thread(new DataTransferHandle()).start();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -53,6 +64,16 @@ public class LocationUpdates extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         locationManager.removeUpdates(locationListener);
     }
 
@@ -69,12 +90,26 @@ public class LocationUpdates extends Service {
     }
     
     private void initConnection () {
-        mHttpClient = new DefaultHttpClient();
-        mHttpPost = new HttpPost(Constants.SERVER + Constants.DATA_POST_URL);
+        try {
+            URL url = new URL("http",Constants.SERVER,3000,Constants.DATA_POST_URL);
+            httpConnection = (HttpURLConnection) url.openConnection();
+            httpConnection.setRequestProperty("Accept", "application/json");
+            httpConnection.setRequestProperty("Content-type", "application/json");
+            httpConnection.setRequestMethod("POST");
+            httpConnection.setDoOutput(true);
+
+            httpConnection.connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean packAndPost(Location2 location2)
             throws Exception {
+        boolean ret = true; // Return value
+
+        // Make connection to the server here.
+        initConnection();
 
         JSONObject holder = new JSONObject();
 
@@ -97,18 +132,18 @@ public class LocationUpdates extends Service {
         dataArray.put(dataObj);
         holder.put("data", dataArray);
 
-        StringEntity se = new StringEntity(holder.toString());
-        mHttpPost.setEntity(se);
-        mHttpPost.setHeader("Accept", "application/json");
-        mHttpPost.setHeader("Content-type", "application/json");
-
-        ResponseHandler responseHandler = new BasicResponseHandler();
         try {
-            mHttpClient.execute(mHttpPost, responseHandler);
+            DataOutputStream out = new DataOutputStream(httpConnection.getOutputStream());
+            out.write(holder.toString().getBytes("UTF-8"));
+            out.flush();
+            out.close();
         } catch (Exception e) {
-            return false;
+            // Data send failed
+            ret = false;
+        } finally {
+            httpConnection.disconnect();
         }
-        return true;
+        return ret;
     }
 
     class MyLocationListener implements LocationListener {
