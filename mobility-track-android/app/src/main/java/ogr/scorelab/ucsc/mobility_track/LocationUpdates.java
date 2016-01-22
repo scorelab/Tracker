@@ -24,6 +24,9 @@ import java.net.URL;
 
 public class LocationUpdates extends Service {
 
+    // Is this service active or not. Used to control the data transfer loop.
+    public static boolean isThisActive = true;
+
     public LocationManager locationManager;
     public MyLocationListener locationListener;
 
@@ -185,8 +188,12 @@ public class LocationUpdates extends Service {
         public void run() {
             Location2 l2;
             while (true) {
+                
                 l2 = dbAccess.get();
                 if (l2 == null) {   // if db is empty
+                    if (!isThisActive)
+                        break;  // Break this loop, if this service stopped by the MainActivity and database is empty.
+
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
