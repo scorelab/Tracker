@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         }
         Intent intent = new Intent(this, LocationUpdates.class);
         intent.putExtra("deviceId", deviceId);
+        LocationUpdates.isThisActive = true;
         startService(intent);
     }
 
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     public void stop(View v) {
         Intent intent = new Intent(this, LocationUpdates.class);
         stopService(intent);
+        LocationUpdates.isThisActive = false;
     }
 
     private String getDeviceMAC() throws IOException {

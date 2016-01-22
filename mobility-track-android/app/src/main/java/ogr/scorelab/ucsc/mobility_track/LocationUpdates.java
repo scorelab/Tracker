@@ -24,6 +24,9 @@ import java.net.URL;
 
 public class LocationUpdates extends Service {
 
+    // Is this service active or not. Used to control the data transfer loop.
+    public static boolean isThisActive = true;
+
     public LocationManager locationManager;
     public MyLocationListener locationListener;
 
@@ -90,7 +93,7 @@ public class LocationUpdates extends Service {
         startForeground(1, notification);
     }
     
-    private void initConnection () {
+    private boolean initConnection () {
         try {
             URL url = new URL("http",Constants.SERVER,3000,Constants.DATA_POST_URL);
             httpConnection = (HttpURLConnection) url.openConnection();
@@ -100,8 +103,10 @@ public class LocationUpdates extends Service {
             httpConnection.setDoOutput(true);
 
             httpConnection.connect();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -110,7 +115,8 @@ public class LocationUpdates extends Service {
         boolean ret = true; // Return value
 
         // Make connection to the server here.
-        initConnection();
+        if (!initConnection())
+            return false;
 
         JSONObject holder = new JSONObject();
 
@@ -182,8 +188,12 @@ public class LocationUpdates extends Service {
         public void run() {
             Location2 l2;
             while (true) {
+                
                 l2 = dbAccess.get();
                 if (l2 == null) {   // if db is empty
+                    if (!isThisActive)
+                        break;  // Break this loop, if this service stopped by the MainActivity and database is empty.
+
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
