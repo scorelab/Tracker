@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -59,7 +60,12 @@ public class LocationUpdates extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        deviceId = intent.getStringExtra("deviceId");
+Log.i("TRACKER", "Service on start.");
+        // Get device id from Shared Preferences.
+        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
+        String defaultValue = getString(R.string.saved_device_id_default);
+        deviceId = sharedPref.getString(getString(R.string.saved_device_id), defaultValue);
+
         foregroundStuff();
         new Thread(new DataTransferHandle()).start();
         return super.onStartCommand(intent, flags, startId);
@@ -68,6 +74,7 @@ public class LocationUpdates extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.i("TRACKER", "Service on destroy.");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions

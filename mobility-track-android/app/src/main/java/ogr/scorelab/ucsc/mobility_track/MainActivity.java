@@ -2,6 +2,7 @@ package ogr.scorelab.ucsc.mobility_track;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -82,8 +83,13 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Device unregistered", Toast.LENGTH_LONG).show();
             return;
         }
+        // Save device id in Shared Preferences.
+        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.saved_device_id), deviceId);
+        editor.apply();
+
         Intent intent = new Intent(this, LocationUpdates.class);
-        intent.putExtra("deviceId", deviceId);
         LocationUpdates.isThisActive = true;
         startService(intent);
     }
