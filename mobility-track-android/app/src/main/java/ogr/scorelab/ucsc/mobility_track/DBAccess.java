@@ -43,6 +43,22 @@ public class DBAccess {
         database.endTransaction();
     }
 
+    // Returns the number of entries in the database
+    public synchronized int getCount()
+    {
+        if (!database.isOpen())
+            return 0;
+
+        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + MySQLiteHelper.TABLE_GEO, null);
+        cursor.moveToFirst();
+
+        int count = cursor.getInt(0);
+
+        cursor.close();
+
+        return count;
+    }
+
     public synchronized Location2 get() {
         if (!database.isOpen())
             return null;
