@@ -37,10 +37,16 @@ public class DBAccess {
         values.put(MySQLiteHelper.COLUMN_DIRECTION, location.getSpeed());
         values.put(MySQLiteHelper.COLUMN_SPEED, location.getBearing());
 
+        database.beginTransaction();
         database.insert(MySQLiteHelper.TABLE_GEO, null, values);
+        database.setTransactionSuccessful();
+        database.endTransaction();
     }
 
     public synchronized Location2 get() {
+        if (!database.isOpen())
+            return null;
+
         Cursor cursor = database.query(MySQLiteHelper.TABLE_GEO, allColumns, null, null, null, null, null);
         if (!cursor.moveToFirst()) {
             return null;

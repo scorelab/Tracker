@@ -25,6 +25,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import ogr.scorelab.ucsc.mobility_track.net.DataTransferHandler;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -107,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     public void stop(View v) {
         Intent intent = new Intent(this, LocationUpdates.class);
         stopService(intent);
-        LocationUpdates.isThisActive = false;
+        DataTransferHandler.isThisActive = false;
     }
 
     private String getDeviceMAC() throws IOException {

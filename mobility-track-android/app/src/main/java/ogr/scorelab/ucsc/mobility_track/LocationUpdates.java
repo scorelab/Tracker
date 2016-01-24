@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import ogr.scorelab.ucsc.mobility_track.net.DataTransferHandler;
+
 public class LocationUpdates extends Service {
 
     // Is this service active or not. Used to control the data transfer loop.
@@ -32,6 +34,7 @@ public class LocationUpdates extends Service {
     public LocationManager locationManager;
     public MyLocationListener locationListener;
 
+    private DataTransferHandler dataHandler;
     private DBAccess dbAccess;
     private HttpURLConnection httpConnection;
     private String deviceId;
@@ -40,8 +43,8 @@ public class LocationUpdates extends Service {
     public void onCreate() {
         super.onCreate();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        dbAccess = new DBAccess(this);
-        dbAccess.open();
+//        dbAccess = new DBAccess(this);
+//        dbAccess.open();
 
         locationListener = new MyLocationListener();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -68,7 +71,8 @@ Log.i("TRACKER", "Service on start.");
         deviceId = sharedPref.getString(getString(R.string.saved_device_id), defaultValue);
 
         foregroundStuff();
-        new Thread(new DataTransferHandle()).start();
+        dataHandler = new DataTransferHandler(this, deviceId);
+        new Thread(dataHandler).start();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -143,7 +147,7 @@ Log.i("TRACKER", "Service on start.");
         return holder;
     }
 
-    private boolean sendJsonToServer (JSONObject dataHolder)
+    private synchronized boolean sendJsonToServer (JSONObject dataHolder)
     {
         boolean ret = true;     // Return value
 
@@ -176,7 +180,7 @@ Log.i("TRACKER", "Service on start.");
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    dbAccess.push(location);
+                    dataHandler.pushToDatabase(location);
                 }
             }).start();
         }
