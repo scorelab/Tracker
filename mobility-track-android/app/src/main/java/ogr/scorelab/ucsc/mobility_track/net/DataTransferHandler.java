@@ -26,6 +26,8 @@ public class DataTransferHandler implements Runnable
     // Is this service active or not. Used to control the data transfer loop.
     public static boolean isThisActive = true;
 
+    private int inCacheCount;   // Number of items in the database
+
     private DBAccess dbAccess;
     private HttpURLConnection httpConnection;
     private String deviceId;
@@ -35,6 +37,42 @@ public class DataTransferHandler implements Runnable
         dbAccess = new DBAccess(context);
         dbAccess.open();
         this.deviceId = deviceId;
+
+        inCacheCount = dbAccess.getCount();
+    }
+
+    public synchronized void uploadCachedDataToServer()
+    {
+        if (inCacheCount == 0)
+            return;                 // Cache is empty
+
+        // Upload in separate thread
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                while (inCacheCount > 0)
+                {
+                    try {
+                        Location2 location2 = dbAccess.get();
+                        JSONObject jsonDataPacket = getJsonObject(location2);
+
+                        if (sendJsonToServer(jsonDataPacket))
+                        {
+                            dbAccess.delete(location2.timestamp);
+                            inCacheCount--;
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -168,5 +206,7 @@ public class DataTransferHandler implements Runnable
     public synchronized void pushToDatabase(Location location)
     {
         dbAccess.push(location);
+
+        inCacheCount++;
     }
 }
