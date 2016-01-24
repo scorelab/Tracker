@@ -54,7 +54,7 @@ public class LocationUpdates extends Service {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
+//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
 
     }
@@ -147,6 +147,9 @@ Log.i("TRACKER", "Service on start.");
     {
         boolean ret = true;     // Return value
 
+        if (!initConnection())
+            return false;
+
         try {
             DataOutputStream out = new DataOutputStream(httpConnection.getOutputStream());
             out.write(dataHolder.toString().getBytes("UTF-8"));
@@ -161,50 +164,6 @@ Log.i("TRACKER", "Service on start.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            httpConnection.disconnect();
-        }
-        return ret;
-    }
-
-    public boolean packAndPost(Location2 location2)
-            throws Exception {
-        boolean ret = true; // Return value
-
-        // Make connection to the server here.
-        if (!initConnection())
-            return false;
-
-        JSONObject holder = new JSONObject();
-
-        String key = "id";
-        String data = deviceId;
-        holder.put(key, data);
-
-        key = "status";
-        holder.put(key, 1);
-
-        holder.put("timestamp", location2.timestamp);
-
-        JSONArray dataArray = new JSONArray();
-        JSONObject dataObj = new JSONObject();
-        dataObj.put("latitude", location2.latitude);
-        dataObj.put("longitude", location2.longitude);
-        dataObj.put("direction", location2.direction);
-        dataObj.put("speed", location2.speed);
-        dataObj.put("timestamp", location2.timestamp);
-        dataArray.put(dataObj);
-        holder.put("data", dataArray);
-
-        try {
-            DataOutputStream out = new DataOutputStream(httpConnection.getOutputStream());
-            out.write(holder.toString().getBytes("UTF-8"));
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            // Data send failed
-            ret = false;
-        } finally {
-            Log.d("TRACKER",httpConnection.getResponseMessage());
             httpConnection.disconnect();
         }
         return ret;
@@ -271,6 +230,7 @@ Log.i("TRACKER", "Service on start.");
                     break;
                 }
             }
+            dbAccess.close();
         }
     }
 }

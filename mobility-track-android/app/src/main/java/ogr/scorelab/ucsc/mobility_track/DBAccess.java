@@ -20,15 +20,15 @@ public class DBAccess {
         dbHelper = new MySQLiteHelper(context);
     }
 
-    public void open() {
+    public synchronized void open() {
         database = dbHelper.getWritableDatabase();
     }
 
-    public void close() {
+    public synchronized void close() {
         dbHelper.close();
     }
 
-    public void push(Location location) {
+    public synchronized void push(Location location) {
         ContentValues values = new ContentValues();
 
         values.put(MySQLiteHelper.COLUMN_TIMESTAMP, System.currentTimeMillis());
@@ -40,7 +40,7 @@ public class DBAccess {
         database.insert(MySQLiteHelper.TABLE_GEO, null, values);
     }
 
-    public Location2 get() {
+    public synchronized Location2 get() {
         Cursor cursor = database.query(MySQLiteHelper.TABLE_GEO, allColumns, null, null, null, null, null);
         if (!cursor.moveToFirst()) {
             return null;
@@ -51,7 +51,7 @@ public class DBAccess {
         return location2;
     }
 
-    public int delete(long timestamp) {
+    public synchronized int delete(long timestamp) {
         return database.delete(MySQLiteHelper.TABLE_GEO, MySQLiteHelper.COLUMN_TIMESTAMP + " = " + timestamp, null);
     }
 
