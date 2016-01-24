@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -15,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
@@ -59,7 +61,12 @@ public class LocationUpdates extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        deviceId = intent.getStringExtra("deviceId");
+Log.i("TRACKER", "Service on start.");
+        // Get device id from Shared Preferences.
+        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
+        String defaultValue = getString(R.string.saved_device_id_default);
+        deviceId = sharedPref.getString(getString(R.string.saved_device_id), defaultValue);
+
         foregroundStuff();
         new Thread(new DataTransferHandle()).start();
         return super.onStartCommand(intent, flags, startId);
@@ -68,6 +75,7 @@ public class LocationUpdates extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.i("TRACKER", "Service on destroy.");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -108,6 +116,54 @@ public class LocationUpdates extends Service {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private JSONObject getJsonObject(Location2 location2) throws JSONException {
+        JSONObject holder = new JSONObject();
+
+        String key = "id";
+        String data = deviceId;
+        holder.put(key, data);
+
+        key = "status";
+        holder.put(key, 1);
+
+        holder.put("timestamp", location2.timestamp);
+
+        JSONArray dataArray = new JSONArray();
+        JSONObject dataObj = new JSONObject();
+        dataObj.put("latitude", location2.latitude);
+        dataObj.put("longitude", location2.longitude);
+        dataObj.put("direction", location2.direction);
+        dataObj.put("speed", location2.speed);
+        dataObj.put("timestamp", location2.timestamp);
+        dataArray.put(dataObj);
+        holder.put("data", dataArray);
+
+        return holder;
+    }
+
+    private boolean sendJsonToServer (JSONObject dataHolder)
+    {
+        boolean ret = true;     // Return value
+
+        try {
+            DataOutputStream out = new DataOutputStream(httpConnection.getOutputStream());
+            out.write(dataHolder.toString().getBytes("UTF-8"));
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            // Data send failed
+            ret = false;
+        } finally {
+            try {
+                Log.d("TRACKER",httpConnection.getResponseMessage());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            httpConnection.disconnect();
+        }
+        return ret;
     }
 
     public boolean packAndPost(Location2 location2)
@@ -203,11 +259,13 @@ public class LocationUpdates extends Service {
                     continue;
                 }
                 try {
-                    if (packAndPost(l2)) {  // if data posted to the server successfully
-                        dbAccess.delete(l2.timestamp);
-                    } else {
+                    JSONObject jsonDataPacket = getJsonObject(l2);
+
+                    if (sendJsonToServer(jsonDataPacket))
+                        dbAccess.delete(l2.timestamp);      // Remove transferred item from database
+                    else
                         Thread.sleep(1000);
-                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     break;
