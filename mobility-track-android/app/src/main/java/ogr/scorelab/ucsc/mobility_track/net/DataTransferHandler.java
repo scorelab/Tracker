@@ -20,7 +20,7 @@ import ogr.scorelab.ucsc.mobility_track.Location2;
 /**
  * Created by dinush on 1/24/16.
  */
-public class DataTransferHandler implements Runnable
+public class DataTransferHandler
 {
 
     // Is this service active or not. Used to control the data transfer loop.
@@ -56,7 +56,6 @@ public class DataTransferHandler implements Runnable
             {
                 while (inCacheCount > 0)
                 {
-                    Log.d("TRACKER","inCacheCount = " + inCacheCount);
                     try {
                         Location2 location2 = dbAccess.get();
                         JSONObject jsonDataPacket = getJsonObject(location2);
@@ -76,41 +75,6 @@ public class DataTransferHandler implements Runnable
                 }
             }
         }).start();
-    }
-
-    @Override
-    public void run()
-    {
-        Location2 l2;
-        while (true) {
-
-            l2 = dbAccess.get();
-            if (l2 == null) {   // if db is empty
-                if (!isThisActive)
-                    break;  // Break this loop, if this service stopped by the MainActivity and database is empty.
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    break;
-                }
-                continue;
-            }
-            try {
-                JSONObject jsonDataPacket = getJsonObject(l2);
-
-                if (sendJsonToServer(jsonDataPacket))
-                    dbAccess.delete(l2.timestamp);      // Remove transferred item from database
-                else
-                    Thread.sleep(1000);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                break;
-            }
-        }
-        dbAccess.close();
     }
 
     private boolean initConnection ()

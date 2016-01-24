@@ -13,7 +13,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,14 +42,14 @@ public class LocationUpdates extends Service {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
 
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-Log.i("TRACKER", "Service on start.");
+
         // Get device id from Shared Preferences.
         SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
         String defaultValue = getString(R.string.saved_device_id_default);
@@ -59,14 +58,14 @@ Log.i("TRACKER", "Service on start.");
         foregroundStuff();
 
         dataHandler = new DataTransferHandler(this, deviceId);
-//        new Thread(dataHandler).start();
+
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i("TRACKER", "Service on destroy.");
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -86,7 +85,7 @@ Log.i("TRACKER", "Service on start.");
     }
 
 
-    // notification
+    // Notification
     protected void foregroundStuff() {
         Notification notification = new Notification();
         startForeground(1, notification);
