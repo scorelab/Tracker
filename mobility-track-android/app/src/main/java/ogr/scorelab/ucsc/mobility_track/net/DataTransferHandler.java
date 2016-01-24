@@ -39,6 +39,8 @@ public class DataTransferHandler implements Runnable
         this.deviceId = deviceId;
 
         inCacheCount = dbAccess.getCount();
+
+        uploadCachedDataToServer();
     }
 
     public synchronized void uploadCachedDataToServer()
@@ -54,6 +56,7 @@ public class DataTransferHandler implements Runnable
             {
                 while (inCacheCount > 0)
                 {
+                    Log.d("TRACKER","inCacheCount = " + inCacheCount);
                     try {
                         Location2 location2 = dbAccess.get();
                         JSONObject jsonDataPacket = getJsonObject(location2);
@@ -65,7 +68,7 @@ public class DataTransferHandler implements Runnable
                         }
                         else
                         {
-                            return;
+                            return;         // Will retry later
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

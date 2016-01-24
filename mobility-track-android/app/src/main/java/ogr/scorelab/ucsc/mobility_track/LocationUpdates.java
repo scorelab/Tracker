@@ -59,7 +59,7 @@ Log.i("TRACKER", "Service on start.");
         foregroundStuff();
 
         dataHandler = new DataTransferHandler(this, deviceId);
-        new Thread(dataHandler).start();
+//        new Thread(dataHandler).start();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -103,9 +103,13 @@ Log.i("TRACKER", "Service on start.");
                     {
                         JSONObject jsonDataPacket = dataHandler.getJsonObject(location);
 
-                        if (!dataHandler.sendJsonToServer(jsonDataPacket))
+                        if (dataHandler.sendJsonToServer(jsonDataPacket))
                         {
-                            dataHandler.pushToDatabase(location);
+                            dataHandler.uploadCachedDataToServer();     // Try to upload cached data also, if any.
+                        }
+                        else
+                        {
+                            dataHandler.pushToDatabase(location);       // Add to cache.
                         }
                     }
                     catch (JSONException e)
