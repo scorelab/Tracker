@@ -15,6 +15,9 @@ import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import ogr.scorelab.ucsc.mobility_track.net.DataTransferHandler;
 
 public class LocationUpdates extends Service {
@@ -54,7 +57,7 @@ Log.i("TRACKER", "Service on start.");
         String deviceId = sharedPref.getString(getString(R.string.saved_device_id), defaultValue);
 
         foregroundStuff();
-        
+
         dataHandler = new DataTransferHandler(this, deviceId);
         new Thread(dataHandler).start();
         return super.onStartCommand(intent, flags, startId);
@@ -96,7 +99,19 @@ Log.i("TRACKER", "Service on start.");
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    dataHandler.pushToDatabase(location);
+                    try
+                    {
+                        JSONObject jsonDataPacket = dataHandler.getJsonObject(location);
+
+                        if (!dataHandler.sendJsonToServer(jsonDataPacket))
+                        {
+                            dataHandler.pushToDatabase(location);
+                        }
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }).start();
         }

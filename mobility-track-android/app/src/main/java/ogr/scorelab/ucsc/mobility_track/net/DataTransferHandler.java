@@ -93,7 +93,7 @@ public class DataTransferHandler implements Runnable
         }
     }
 
-    private JSONObject getJsonObject(Location location) throws JSONException {
+    public JSONObject getJsonObject(Location location) throws JSONException {
         Location2 location2 = new Location2();
 
         location2.direction = location.getBearing();
@@ -131,7 +131,7 @@ public class DataTransferHandler implements Runnable
         return holder;
     }
 
-    private synchronized boolean sendJsonToServer (JSONObject dataHolder)
+    public synchronized boolean sendJsonToServer (JSONObject dataHolder)
     {
         boolean ret = true;     // Return value
 
