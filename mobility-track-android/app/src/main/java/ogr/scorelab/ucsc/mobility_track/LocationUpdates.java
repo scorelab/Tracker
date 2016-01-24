@@ -15,24 +15,12 @@ import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import ogr.scorelab.ucsc.mobility_track.net.DataTransferHandler;
 
 public class LocationUpdates extends Service {
 
-    // Is this service active or not. Used to control the data transfer loop.
-    public static boolean isThisActive = true;
-
-    public LocationManager locationManager;
-    public MyLocationListener locationListener;
+    private LocationManager locationManager;
+    private MyLocationListener locationListener;
 
     private DataTransferHandler dataHandler;
 
@@ -66,6 +54,7 @@ Log.i("TRACKER", "Service on start.");
         String deviceId = sharedPref.getString(getString(R.string.saved_device_id), defaultValue);
 
         foregroundStuff();
+        
         dataHandler = new DataTransferHandler(this, deviceId);
         new Thread(dataHandler).start();
         return super.onStartCommand(intent, flags, startId);

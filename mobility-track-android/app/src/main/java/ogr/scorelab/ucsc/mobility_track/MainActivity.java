@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
 
         Intent intent = new Intent(this, LocationUpdates.class);
-        LocationUpdates.isThisActive = true;
+        DataTransferHandler.isThisActive = true;
         startService(intent);
     }
 
