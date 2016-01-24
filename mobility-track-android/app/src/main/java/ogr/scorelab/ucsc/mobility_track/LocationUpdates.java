@@ -35,16 +35,11 @@ public class LocationUpdates extends Service {
     public MyLocationListener locationListener;
 
     private DataTransferHandler dataHandler;
-    private DBAccess dbAccess;
-    private HttpURLConnection httpConnection;
-    private String deviceId;
 
     @Override
     public void onCreate() {
         super.onCreate();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//        dbAccess = new DBAccess(this);
-//        dbAccess.open();
 
         locationListener = new MyLocationListener();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -68,7 +63,7 @@ Log.i("TRACKER", "Service on start.");
         // Get device id from Shared Preferences.
         SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
         String defaultValue = getString(R.string.saved_device_id_default);
-        deviceId = sharedPref.getString(getString(R.string.saved_device_id), defaultValue);
+        String deviceId = sharedPref.getString(getString(R.string.saved_device_id), defaultValue);
 
         foregroundStuff();
         dataHandler = new DataTransferHandler(this, deviceId);
@@ -104,74 +99,6 @@ Log.i("TRACKER", "Service on start.");
         Notification notification = new Notification();
         startForeground(1, notification);
     }
-    
-    private boolean initConnection () {
-        try {
-            URL url = new URL("http",Constants.SERVER,3000,Constants.DATA_POST_URL);
-            httpConnection = (HttpURLConnection) url.openConnection();
-            httpConnection.setRequestProperty("Accept", "application/json");
-            httpConnection.setRequestProperty("Content-type", "application/json");
-            httpConnection.setRequestMethod("POST");
-            httpConnection.setDoOutput(true);
-
-            httpConnection.connect();
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private JSONObject getJsonObject(Location2 location2) throws JSONException {
-        JSONObject holder = new JSONObject();
-
-        String key = "id";
-        String data = deviceId;
-        holder.put(key, data);
-
-        key = "status";
-        holder.put(key, 1);
-
-        holder.put("timestamp", location2.timestamp);
-
-        JSONArray dataArray = new JSONArray();
-        JSONObject dataObj = new JSONObject();
-        dataObj.put("latitude", location2.latitude);
-        dataObj.put("longitude", location2.longitude);
-        dataObj.put("direction", location2.direction);
-        dataObj.put("speed", location2.speed);
-        dataObj.put("timestamp", location2.timestamp);
-        dataArray.put(dataObj);
-        holder.put("data", dataArray);
-
-        return holder;
-    }
-
-    private synchronized boolean sendJsonToServer (JSONObject dataHolder)
-    {
-        boolean ret = true;     // Return value
-
-        if (!initConnection())
-            return false;
-
-        try {
-            DataOutputStream out = new DataOutputStream(httpConnection.getOutputStream());
-            out.write(dataHolder.toString().getBytes("UTF-8"));
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            // Data send failed
-            ret = false;
-        } finally {
-            try {
-                Log.d("TRACKER",httpConnection.getResponseMessage());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            httpConnection.disconnect();
-        }
-        return ret;
-    }
 
     class MyLocationListener implements LocationListener {
 
@@ -201,40 +128,4 @@ Log.i("TRACKER", "Service on start.");
         }
     }
 
-    private class DataTransferHandle implements Runnable {
-
-        @Override
-        public void run() {
-            Location2 l2;
-            while (true) {
-
-                l2 = dbAccess.get();
-                if (l2 == null) {   // if db is empty
-                    if (!isThisActive)
-                        break;  // Break this loop, if this service stopped by the MainActivity and database is empty.
-
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        break;
-                    }
-                    continue;
-                }
-                try {
-                    JSONObject jsonDataPacket = getJsonObject(l2);
-
-                    if (sendJsonToServer(jsonDataPacket))
-                        dbAccess.delete(l2.timestamp);      // Remove transferred item from database
-                    else
-                        Thread.sleep(1000);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    break;
-                }
-            }
-            dbAccess.close();
-        }
-    }
 }
