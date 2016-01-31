@@ -29,10 +29,12 @@ public class LocationUpdates extends Service {
 
     public LocationManager locationManager;
     public MyLocationListener locationListener;
+    public Context context;
 
     private DBAccess dbAccess;
     private HttpURLConnection httpConnection;
     private String deviceId;
+
 
     @Override
     public void onCreate() {
@@ -95,7 +97,7 @@ public class LocationUpdates extends Service {
     
     private boolean initConnection () {
         try {
-            URL url = new URL("http",Constants.SERVER,3000,Constants.DATA_POST_URL);
+            URL url = new URL("http",SettingsActivity.getIpAddress(getApplication()),3000,Constants.DATA_POST_URL);
             httpConnection = (HttpURLConnection) url.openConnection();
             httpConnection.setRequestProperty("Accept", "application/json");
             httpConnection.setRequestProperty("Content-type", "application/json");
