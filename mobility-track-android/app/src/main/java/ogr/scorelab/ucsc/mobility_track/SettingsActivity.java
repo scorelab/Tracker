@@ -50,7 +50,7 @@ public class SettingsActivity extends AppCompatActivity {
             Intent intent = new Intent(this,MainActivity.class);
             startActivity(intent);
         } else{
-            Toast.makeText(this,"Ip can't be empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"IP can't be empty", Toast.LENGTH_SHORT).show();
         }
     }
 
