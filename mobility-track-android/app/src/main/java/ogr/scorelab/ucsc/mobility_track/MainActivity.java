@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
     private String deviceId = null;
 
+    public Context context;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                URL url = new URL("http",Constants.SERVER,3000,Constants.GET_DEVICE_ID_URL+params[0]);
+                URL url = new URL("http",SettingsActivity.getIpAddress(getApplication()),3000,Constants.GET_DEVICE_ID_URL+params[0]);
+                Log.v("MainActivity", SettingsActivity.getIpAddress(getApplication()));
                 httpConnection = (HttpURLConnection) url.openConnection();
                 httpConnection.setDoInput(true);
                 return inputStreamToString(httpConnection.getInputStream());
@@ -167,5 +171,10 @@ public class MainActivity extends AppCompatActivity {
 
             return ret;
         }
+    }
+
+    public void startSettingsActivity(View view){
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }
