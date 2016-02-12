@@ -34,7 +34,13 @@ cd mobility-track-nodejs
   ```
 
 4. Run mongodb. Default path is set to `/data/db` ( On Windows this would be `C:\data\db`). You can change it when you are running.
-5. Now run grunt, it will start the node server and listen to port 3000.
+
+5. Install grunt-cli with
+```
+npm install -g grunt-cli
+```
+
+6. Now run grunt, it will start the node server and listen to port 3000.
 ```
 grunt
 ```
