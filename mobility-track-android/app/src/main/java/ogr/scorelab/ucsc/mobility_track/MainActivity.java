@@ -2,6 +2,7 @@ package ogr.scorelab.ucsc.mobility_track;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,6 +25,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import ogr.scorelab.ucsc.mobility_track.net.DataTransferHandler;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
         txtMac = (TextView) findViewById(R.id.txtMac);
         txtDeviceId = (TextView) findViewById(R.id.txtDeviceId);
 
+        getDeviceId();
+    }
+
+    private void getDeviceId() {
         try {
             String deviceMAC = getDeviceMAC();
             if (deviceMAC == null) {
@@ -73,18 +80,28 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        if(id == R.id.action_refresh_device_id) {
+            getDeviceId();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     /* start background service */
     public void start(View v) {
         if (deviceId == null) {
-            Toast.makeText(this, "Device unregistered", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.device_unregistered, Toast.LENGTH_LONG).show();
             return;
         }
+        // Save device id in Shared Preferences.
+        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.saved_device_id), deviceId);
+        editor.apply();
+
         Intent intent = new Intent(this, LocationUpdates.class);
-        intent.putExtra("deviceId", deviceId);
-        LocationUpdates.isThisActive = true;
+        DataTransferHandler.isThisActive = true;
         startService(intent);
     }
 
@@ -92,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     public void stop(View v) {
         Intent intent = new Intent(this, LocationUpdates.class);
         stopService(intent);
-        LocationUpdates.isThisActive = false;
+        DataTransferHandler.isThisActive = false;
     }
 
     private String getDeviceMAC() throws IOException {
@@ -139,11 +156,15 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(s);
             try {
                 if (s == null || s.isEmpty()) {
-                    txtDeviceId.setText("Device unregistered");
+                    txtDeviceId.setText(R.string.device_unregistered);
                     return;
                 }
                 try {
                     JSONArray jsonArray = new JSONArray(s);
+                    if(jsonArray.length() == 0) {
+                        txtDeviceId.setText(R.string.device_unregistered);
+                        return;
+                    }
                     JSONObject jsonObject = jsonArray.getJSONObject(0);
                     deviceId = jsonObject.getString("_id");
                     txtDeviceId.setText(deviceId);

@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -12,34 +13,23 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import ogr.scorelab.ucsc.mobility_track.net.DataTransferHandler;
 
 public class LocationUpdates extends Service {
 
-    // Is this service active or not. Used to control the data transfer loop.
-    public static boolean isThisActive = true;
+    private LocationManager locationManager;
+    private MyLocationListener locationListener;
 
-    public LocationManager locationManager;
-    public MyLocationListener locationListener;
-
-    private DBAccess dbAccess;
-    private HttpURLConnection httpConnection;
-    private String deviceId;
+    private DataTransferHandler dataHandler;
 
     @Override
     public void onCreate() {
         super.onCreate();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        dbAccess = new DBAccess(this);
-        dbAccess.open();
 
         locationListener = new MyLocationListener();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -53,21 +43,29 @@ public class LocationUpdates extends Service {
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.UPDATE_FREQUENCY, 0, locationListener);
 
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        deviceId = intent.getStringExtra("deviceId");
+
+        // Get device id from Shared Preferences.
+        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
+        String defaultValue = getString(R.string.saved_device_id_default);
+        String deviceId = sharedPref.getString(getString(R.string.saved_device_id), defaultValue);
+
         foregroundStuff();
-        new Thread(new DataTransferHandle()).start();
+
+        dataHandler = new DataTransferHandler(this, deviceId);
+
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -87,71 +85,10 @@ public class LocationUpdates extends Service {
     }
 
 
-    // notification
+    // Notification
     protected void foregroundStuff() {
         Notification notification = new Notification();
         startForeground(1, notification);
-    }
-    
-    private boolean initConnection () {
-        try {
-            URL url = new URL("http",Constants.SERVER,3000,Constants.DATA_POST_URL);
-            httpConnection = (HttpURLConnection) url.openConnection();
-            httpConnection.setRequestProperty("Accept", "application/json");
-            httpConnection.setRequestProperty("Content-type", "application/json");
-            httpConnection.setRequestMethod("POST");
-            httpConnection.setDoOutput(true);
-
-            httpConnection.connect();
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean packAndPost(Location2 location2)
-            throws Exception {
-        boolean ret = true; // Return value
-
-        // Make connection to the server here.
-        if (!initConnection())
-            return false;
-
-        JSONObject holder = new JSONObject();
-
-        String key = "id";
-        String data = deviceId;
-        holder.put(key, data);
-
-        key = "status";
-        holder.put(key, 1);
-
-        holder.put("timestamp", location2.timestamp);
-
-        JSONArray dataArray = new JSONArray();
-        JSONObject dataObj = new JSONObject();
-        dataObj.put("latitude", location2.latitude);
-        dataObj.put("longitude", location2.longitude);
-        dataObj.put("direction", location2.direction);
-        dataObj.put("speed", location2.speed);
-        dataObj.put("timestamp", location2.timestamp);
-        dataArray.put(dataObj);
-        holder.put("data", dataArray);
-
-        try {
-            DataOutputStream out = new DataOutputStream(httpConnection.getOutputStream());
-            out.write(holder.toString().getBytes("UTF-8"));
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            // Data send failed
-            ret = false;
-        } finally {
-            Log.d("TRACKER",httpConnection.getResponseMessage());
-            httpConnection.disconnect();
-        }
-        return ret;
     }
 
     class MyLocationListener implements LocationListener {
@@ -161,7 +98,23 @@ public class LocationUpdates extends Service {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    dbAccess.push(location);
+                    try
+                    {
+                        JSONObject jsonDataPacket = dataHandler.getJsonObject(location);
+
+                        if (dataHandler.sendJsonToServer(jsonDataPacket))
+                        {
+                            dataHandler.uploadCachedDataToServer();     // Try to upload cached data also, if any.
+                        }
+                        else
+                        {
+                            dataHandler.pushToDatabase(location);       // Add to cache.
+                        }
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }).start();
         }
@@ -182,37 +135,4 @@ public class LocationUpdates extends Service {
         }
     }
 
-    private class DataTransferHandle implements Runnable {
-
-        @Override
-        public void run() {
-            Location2 l2;
-            while (true) {
-
-                l2 = dbAccess.get();
-                if (l2 == null) {   // if db is empty
-                    if (!isThisActive)
-                        break;  // Break this loop, if this service stopped by the MainActivity and database is empty.
-
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        break;
-                    }
-                    continue;
-                }
-                try {
-                    if (packAndPost(l2)) {  // if data posted to the server successfully
-                        dbAccess.delete(l2.timestamp);
-                    } else {
-                        Thread.sleep(1000);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    break;
-                }
-            }
-        }
-    }
 }
