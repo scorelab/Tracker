@@ -2,7 +2,7 @@
 /*
  * GET users listing.
  */
- 
+ var jwt = require('jsonwebtoken');
 var mongoose = require('mongoose')
    , TrackerLocations = mongoose.model('TrackerLocations')
    , Tracker = mongoose.model('Tracker')
@@ -209,4 +209,65 @@ exports.listLocationsById = function(req, res){
     res.send(rcd);
   });
 }
+
+exports.authenticate = function (req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+	if (username) {
+		if (password) {
+			User.findOne({
+				'userDetails.local.email': username
+			}, function (err, user) {
+				if (err) throw err;
+				if (!user) {
+					res.json({
+						success: false,
+						message: 'Authentication failed. User not found.'
+					});
+				} else if (user) {
+					var hash = user.generateHash(password);
+					if (!user.validPassword(password)) {	// check if password matches
+						res.json({
+							success: false,
+							message: 'Authentication failed. Wrong password.'
+						});
+					} else {
+						sendToken(req, res, user);
+					}
+				}
+			});
+		}else {
+			res.status(400).json({
+				success: false,
+				message: 'Authentication failed. Password required.'
+			});
+		}
+	} else {
+		res.status(400).json({
+			success: false,
+			message: 'Authentication failed. Username required.'
+		});
+	}
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

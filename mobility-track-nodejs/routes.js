@@ -20,6 +20,9 @@ app.get('/api/tracker/:id/delete', tracker.delete);
 app.get('/api/tracker/findmac/:mac', tracker.findMac);
 app.get('/api/trackers', tracker.getTrackers);
 
+//authentication
+app.post('/authenticate', tracker.authenticate);
+
 //TrackerLocation
 app.get('/api/tracker/location/data', tracker.listLocationData);
 app.post('/api/tracker/location/data', tracker.addLocationData);
