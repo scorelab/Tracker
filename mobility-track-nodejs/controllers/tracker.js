@@ -2,11 +2,17 @@
 /*
  * GET users listing.
  */
- var jwt = require('jsonwebtoken');
+ 
+var jwt = require('jsonwebtoken');
+
 var mongoose = require('mongoose')
    , TrackerLocations = mongoose.model('TrackerLocations')
    , Tracker = mongoose.model('Tracker')
 
+var User = require('../models/User');
+   
+   
+   
 exports.locations = function (req, res) {
 
        TrackerLocations.aggregate(
@@ -216,13 +222,13 @@ exports.authenticate = function (req, res) {
 	if (username) {
 		if (password) {
 			User.findOne({
-				'userDetails.local.email': username
+				'userDetails.username': username
 			}, function (err, user) {
 				if (err) throw err;
 				if (!user) {
 					res.json({
 						success: false,
-						message: 'Authentication failed. User not found.'
+						message: 'Authentication failed. User not found:' + username
 					});
 				} else if (user) {
 					var hash = user.generateHash(password);
@@ -251,12 +257,11 @@ exports.authenticate = function (req, res) {
 };
 
 var sendToken = function (req, res, user) {
-	
-	var apiSecret = app.get('apiSecret');
+	var apiSecret = 'temporarySecret';
 	var tempUser = {
-		iss: 'tracker',
+		app: 'tracker',
 		context: {
-			username: user.userDetails.local.username,
+			username: user.userDetails.username,
 		}
 	};
 		

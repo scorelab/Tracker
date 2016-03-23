@@ -16,6 +16,8 @@
     "express"
   ],
   "dependencies": {
+    "bcrypt-nodejs": "latest",
+	"jsonwebtoken": "^5.5.4",
     "express": "~3.1.0",
     "mongoose": "~3.8.8",
     "ejs": "^2.3.1",
