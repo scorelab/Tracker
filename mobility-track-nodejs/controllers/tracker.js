@@ -333,7 +333,7 @@ exports.signup = function (req, res) {
 			message: 'Authentication failed. Username required.'
 		});
 	}
-});
+}
 
 
 
