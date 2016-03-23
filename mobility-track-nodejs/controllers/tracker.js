@@ -250,7 +250,25 @@ exports.authenticate = function (req, res) {
 	}
 };
 
+var sendToken = function (req, res, user) {
+	
+	var apiSecret = app.get('apiSecret');
+	var tempUser = {
+		iss: 'tracker',
+		context: {
+			username: user.userDetails.local.username,
+		}
+	};
+		
+	var token = jwt.sign(tempUser, apiSecret, {
+		expiresInMinutes: 1440 // expires in 24 hours
+	});
 
+	return res.json({
+		success: true,
+		token: token
+	});
+};
 
 
 
