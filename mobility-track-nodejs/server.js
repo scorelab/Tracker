@@ -19,6 +19,10 @@ var express = require('express'),
 
 var app = express();
 
+var passport = require('passport');
+var flash = require('connect-flash');
+
+require('./passport')(passport);
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -33,8 +37,15 @@ app.configure(function(){
   });
   app.use(express.favicon());
   app.use(express.logger('dev'));
+  app.use(express.cookieParser());
   app.use(express.bodyParser());
+  app.use(express.session({ secret: 'temporarySecret' }));
   app.use(express.methodOverride());
+  
+  app.use(passport.initialize());
+  app.use(passport.session()); 
+  app.use(flash());
+  
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
 });
@@ -49,8 +60,10 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+
+
 //Routes
-require('./routes')(app);
+require('./routes')(app,passport);
 
 //===============================
 
