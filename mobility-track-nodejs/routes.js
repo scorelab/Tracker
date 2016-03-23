@@ -21,6 +21,7 @@ app.get('/api/tracker/findmac/:mac', tracker.findMac);
 app.get('/api/trackers', tracker.getTrackers);
 
 //authentication
+app.post('/signup',tracker.signup);
 app.post('/authenticate', tracker.authenticate);
 
 //TrackerLocation

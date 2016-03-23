@@ -275,6 +275,65 @@ var sendToken = function (req, res, user) {
 	});
 };
 
+exports.signup = function (req, res) {
+	var username = req.body.username;
+	var password = req.body.password;
+	var name = req.body.name;
+
+	if (username) {
+		if (password) {
+			User.findOne({
+				'userDetails.username': username
+			}, function (err, user) {
+				if (err) {
+					return res.json({
+						success: false,
+						message: 'Unexpected Error while checking user'
+					});
+				} else {
+					if (user) {
+						return res.json({
+							success: false,
+							message: 'Error: User already exists'
+						});
+					} else {
+
+						var newUser = new User();
+
+						newUser.userDetails.username = username;
+						newUser.userDetails.name = name;
+						newUser.userDetails.password = newUser.generateHash(password);
+
+						newUser.save(function (err) {
+							if (err) {
+								return res.json({
+									success: false,
+									message: 'Unexpected Error while saving new user'
+								});
+							}
+							else{
+								return res.status(200).json({
+									success: true,
+									message: 'User created'
+								});
+							}
+						});
+					}
+				}
+			});
+		} else {
+			res.status(400).json({
+				success: false,
+				message: 'Authentication failed. Password required.'
+			});
+		}
+	} else {
+		res.status(400).json({
+			success: false,
+			message: 'Authentication failed. Username required.'
+		});
+	}
+});
 
 
 
