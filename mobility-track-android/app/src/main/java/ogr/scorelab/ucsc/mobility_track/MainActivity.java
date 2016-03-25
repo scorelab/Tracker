@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +29,11 @@ import java.net.URL;
 import ogr.scorelab.ucsc.mobility_track.net.DataTransferHandler;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private Button startButton, stopButton;
     private TextView txtMac, txtDeviceId;
 
     private String deviceId = null;
@@ -38,10 +42,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        init();
+        setInit();
+        setData();
+    }
 
-        txtMac = (TextView) findViewById(R.id.txtMac);
-        txtDeviceId = (TextView) findViewById(R.id.txtDeviceId);
+    private void init() {
+        txtMac = (TextView) findViewById(R.id.mac_address);
+        txtDeviceId = (TextView) findViewById(R.id.device_id);
 
+        startButton=(Button)findViewById(R.id.start_button);
+        stopButton=(Button)findViewById(R.id.stop_button);
+    }
+
+    private void setInit() {
+
+            startButton.setOnClickListener(this);
+            stopButton.setOnClickListener(this);
+    }
+
+    private void setData() {
         getDeviceId();
     }
 
@@ -50,13 +70,12 @@ public class MainActivity extends AppCompatActivity {
             String deviceMAC = getDeviceMAC();
             if (deviceMAC == null) {
                 txtMac.setText("Device don't have mac address or wi-fi is disabled");
-            }
-            else {
+            } else {
                 txtMac.setText(deviceMAC);
                 new GetDeviceConfigs().execute(deviceMAC);
             }
         } catch (IOException e) {
-            Log.e("TRACKER", e.getLocalizedMessage());
+            Log.d(TAG, "getDeviceId() called with: " + e.getLocalizedMessage());
         }
     }
 
@@ -80,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-        if(id == R.id.action_refresh_device_id) {
+        if (id == R.id.action_refresh_device_id) {
             getDeviceId();
             return true;
         }
@@ -89,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* start background service */
-    public void start(View v) {
+    public void start() {
         if (deviceId == null) {
             Toast.makeText(this, R.string.device_unregistered, Toast.LENGTH_LONG).show();
             return;
@@ -106,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* stop background service */
-    public void stop(View v) {
+    public void stop() {
         Intent intent = new Intent(this, LocationUpdates.class);
         stopService(intent);
         DataTransferHandler.isThisActive = false;
@@ -117,11 +136,25 @@ public class MainActivity extends AppCompatActivity {
         if (wifiManager.getConnectionInfo().getMacAddress() == null) {
             return null;
         }
-        
+
         String mac = "";
         for (String block : wifiManager.getConnectionInfo().getMacAddress().split(":"))
             mac += block.toUpperCase();
         return mac;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.start_button:
+                start();
+                break;
+            case R.id.stop_button:
+                stop();
+                break;
+            default:
+
+        }
     }
 
     /*public boolean isServiceRunning(Class<?> serviceClass) {
@@ -141,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                URL url = new URL("http",Constants.SERVER,3000,Constants.GET_DEVICE_ID_URL+params[0]);
+                URL url = new URL("http", Constants.SERVER, 3000, Constants.GET_DEVICE_ID_URL + params[0]);
                 httpConnection = (HttpURLConnection) url.openConnection();
                 httpConnection.setDoInput(true);
                 return inputStreamToString(httpConnection.getInputStream());
@@ -161,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 try {
                     JSONArray jsonArray = new JSONArray(s);
-                    if(jsonArray.length() == 0) {
+                    if (jsonArray.length() == 0) {
                         txtDeviceId.setText(R.string.device_unregistered);
                         return;
                     }
@@ -176,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        private String inputStreamToString (InputStream in) throws IOException {
+        private String inputStreamToString(InputStream in) throws IOException {
             String ret = "";
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
