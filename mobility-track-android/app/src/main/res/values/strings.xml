@@ -11,4 +11,7 @@
     <string name="saved_device_id">deviceid</string>
     <string name="saved_device_id_default">0</string>
 
+    <!--Maybe replace this with your own-->
+    <string name="google_maps_api_key">AIzaSyAnkDdK7G7UDtgXUNEDrOrfAOlD91k6uFY</string>
+
 </resources>

@@ -14,6 +14,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,11 +32,13 @@ import java.net.URL;
 import ogr.scorelab.ucsc.mobility_track.net.DataTransferHandler;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private TextView txtMac, txtDeviceId;
 
     private String deviceId = null;
+
+    private MapFragment map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
 
         txtMac = (TextView) findViewById(R.id.txtMac);
         txtDeviceId = (TextView) findViewById(R.id.txtDeviceId);
+
+        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map));
+        map.getMapAsync(this);
 
         getDeviceId();
     }
@@ -188,5 +197,10 @@ public class MainActivity extends AppCompatActivity {
 
             return ret;
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        //perform any desired actions on map
     }
 }
