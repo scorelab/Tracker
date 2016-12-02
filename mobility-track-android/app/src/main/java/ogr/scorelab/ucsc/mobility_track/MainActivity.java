@@ -1,11 +1,14 @@
 package ogr.scorelab.ucsc.mobility_track;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,8 +63,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             String deviceMAC = getDeviceMAC();
             if (deviceMAC == null) {
                 txtMac.setText("Device don't have mac address or wi-fi is disabled");
-            }
-            else {
+            } else {
                 txtMac.setText(deviceMAC);
                 new GetDeviceConfigs().execute(deviceMAC);
             }
@@ -89,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return true;
         }
 
-        if(id == R.id.action_refresh_device_id) {
+        if (id == R.id.action_refresh_device_id) {
             getDeviceId();
             return true;
         }
@@ -126,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (wifiManager.getConnectionInfo().getMacAddress() == null) {
             return null;
         }
-        
+
         String mac = "";
         for (String block : wifiManager.getConnectionInfo().getMacAddress().split(":"))
             mac += block.toUpperCase();
@@ -150,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         protected String doInBackground(String... params) {
             try {
-                URL url = new URL("http",Constants.SERVER,3000,Constants.GET_DEVICE_ID_URL+params[0]);
+                URL url = new URL("http", Constants.SERVER, 3000, Constants.GET_DEVICE_ID_URL + params[0]);
                 httpConnection = (HttpURLConnection) url.openConnection();
                 httpConnection.setDoInput(true);
                 return inputStreamToString(httpConnection.getInputStream());
@@ -170,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 try {
                     JSONArray jsonArray = new JSONArray(s);
-                    if(jsonArray.length() == 0) {
+                    if (jsonArray.length() == 0) {
                         txtDeviceId.setText(R.string.device_unregistered);
                         return;
                     }
@@ -185,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-        private String inputStreamToString (InputStream in) throws IOException {
+        private String inputStreamToString(InputStream in) throws IOException {
             String ret = "";
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
@@ -201,6 +204,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //perform any desired actions on map
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);
     }
 }
