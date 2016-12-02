@@ -46,4 +46,13 @@
         android:layout_marginTop="10dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+    
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:id="@+id/map"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/txtDeviceId"
+        android:name="com.google.android.gms.maps.MapFragment"
+        />
 </RelativeLayout>

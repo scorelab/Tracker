@@ -12,4 +12,16 @@
     tools:context="ogr.scorelab.ucsc.mobility_track.SettingsActivity"
     tools:showIn="@layout/activity_settings">
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:id="@+id/mapAttributionTxt"/>
+
+    </android.support.v4.widget.NestedScrollView>
+
 </RelativeLayout>
