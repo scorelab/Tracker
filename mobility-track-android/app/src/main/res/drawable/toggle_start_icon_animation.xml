@@ -1,0 +1,13 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:drawable="@drawable/ic_play"
+    tools:targetApi="lollipop">
+
+    <target
+        android:name="rotationGroup"
+        android:animation="@animator/start_rotation" />
+    <target
+        android:name="path"
+        android:animation="@animator/start_path" />
+
+</animated-vector>

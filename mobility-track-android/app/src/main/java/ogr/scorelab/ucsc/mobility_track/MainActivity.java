@@ -3,14 +3,17 @@ package ogr.scorelab.ucsc.mobility_track;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,21 +31,34 @@ import java.net.URL;
 import ogr.scorelab.ucsc.mobility_track.net.DataTransferHandler;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView txtMac, txtDeviceId;
 
     private String deviceId = null;
+
+    private boolean versionIs21;
+    
+    private ImageView playPauseButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        txtMac = (TextView) findViewById(R.id.txtMac);
-        txtDeviceId = (TextView) findViewById(R.id.txtDeviceId);
+        init();
 
         getDeviceId();
+    }
+
+    private void init(){
+        versionIs21 = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+
+        txtMac = (TextView) findViewById(R.id.txtMac);
+        txtDeviceId = (TextView) findViewById(R.id.txtDeviceId);
+        playPauseButton = ((ImageView) findViewById(R.id.playPauseButton));
+
+        playPauseButton.setOnClickListener(this);
     }
 
     private void getDeviceId() {
@@ -187,6 +203,14 @@ public class MainActivity extends AppCompatActivity {
             in.close();
 
             return ret;
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+
+
         }
     }
 }
