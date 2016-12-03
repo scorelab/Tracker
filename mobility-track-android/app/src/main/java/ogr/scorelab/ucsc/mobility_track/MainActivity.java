@@ -1,13 +1,16 @@
 package ogr.scorelab.ucsc.mobility_track;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -16,6 +19,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,8 +38,7 @@ import java.net.URL;
 
 import ogr.scorelab.ucsc.mobility_track.net.DataTransferHandler;
 
-
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
 
     private TextView txtMac, txtDeviceId;
 
@@ -40,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean versionIs21;
     
     private ImageView playPauseButton;
+
+    private MapFragment map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +68,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         playPauseButton = ((ImageView) findViewById(R.id.playPauseButton));
 
         playPauseButton.setOnClickListener(this);
+
+        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map));
+        map.getMapAsync(this);
+
+        getDeviceId();
+
     }
 
     private void getDeviceId() {
@@ -66,8 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String deviceMAC = getDeviceMAC();
             if (deviceMAC == null) {
                 txtMac.setText("Device don't have mac address or wi-fi is disabled");
-            }
-            else {
+            } else {
                 txtMac.setText(deviceMAC);
                 new GetDeviceConfigs().execute(deviceMAC);
             }
@@ -96,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
 
-        if(id == R.id.action_refresh_device_id) {
+        if (id == R.id.action_refresh_device_id) {
             getDeviceId();
             return true;
         }
@@ -133,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (wifiManager.getConnectionInfo().getMacAddress() == null) {
             return null;
         }
-        
+
         String mac = "";
         for (String block : wifiManager.getConnectionInfo().getMacAddress().split(":"))
             mac += block.toUpperCase();
@@ -157,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected String doInBackground(String... params) {
             try {
-                URL url = new URL("http",Constants.SERVER,3000,Constants.GET_DEVICE_ID_URL+params[0]);
+                URL url = new URL("http", Constants.SERVER, 3000, Constants.GET_DEVICE_ID_URL + params[0]);
                 httpConnection = (HttpURLConnection) url.openConnection();
                 httpConnection.setDoInput(true);
                 return inputStreamToString(httpConnection.getInputStream());
@@ -177,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 try {
                     JSONArray jsonArray = new JSONArray(s);
-                    if(jsonArray.length() == 0) {
+                    if (jsonArray.length() == 0) {
                         txtDeviceId.setText(R.string.device_unregistered);
                         return;
                     }
@@ -192,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-        private String inputStreamToString (InputStream in) throws IOException {
+        private String inputStreamToString(InputStream in) throws IOException {
             String ret = "";
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
@@ -208,9 +222,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
 
 
         }
+    }
+
+    public void onMapReady(GoogleMap googleMap) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);
     }
 }
