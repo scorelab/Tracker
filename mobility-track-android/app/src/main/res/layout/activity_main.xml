@@ -73,13 +73,25 @@
             android:textAppearance="?android:attr/textAppearanceSmallInverse"
             android:id="@+id/txtMac" />
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_refresh"
+            android:padding="5dp"
+            android:background="?selectableItemBackground"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/refreshId_icon"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmallInverse"
             android:layout_centerVertical="true"
             android:id="@+id/device_id"
-            android:text="DEVICEID" />
+            android:text="DEVICEID"
+            android:layout_toStartOf="@id/refreshId_icon"
+            android:layout_toLeftOf="@id/refreshId_icon"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -92,16 +104,6 @@
             android:layout_toStartOf="@id/device_id"
             android:layout_toLeftOf="@id/device_id"
             android:layout_marginRight="5dp" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_refresh"
-            android:padding="5dp"
-            android:background="?selectableItemBackground"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:id="@+id/refreshId_icon"/>
 
     </RelativeLayout>
 

@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String deviceId = null;
 
-    private boolean versionIs21;
+    private boolean versionIs21 = false;
 
     private MapFragment map;
 
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtMac = (TextView) findViewById(R.id.txtMac);
         txtDeviceId = (TextView) findViewById(R.id.device_id);
         toggleTrackerIcon = ((ImageView) findViewById(R.id.toggle_icon));
-       // refreshIdIcon = ((ImageView) findViewById(R.id.refreshId_icon));
+        refreshIdIcon = ((ImageView) findViewById(R.id.refreshId_icon));
         connectionInfo = ((TextView) findViewById(R.id.connection_info));
 
         //Animators are separated so listener can be set directly to fade animator. Setting listener on set never calls onRepeat
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.tracker_toggle).setOnClickListener(this);
 
-     //   refreshIdIcon.setOnClickListener(this);
+        refreshIdIcon.setOnClickListener(this);
 
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map));
         map.getMapAsync(this);
@@ -123,10 +123,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.e("TRACKER", e.getLocalizedMessage());
         }
         //Animate
-//        if (versionIs21) {
-//            refreshIdIcon.setImageDrawable(refreshIdDrawable);
-//            refreshIdDrawable.start();
-//        }
+        if (versionIs21) {
+            refreshIdIcon.setImageDrawable(refreshIdDrawable);
+            refreshIdDrawable.start();
+        }
     }
 
     @Override
@@ -214,9 +214,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.tracker_toggle:
                 toggleTracker();
                 break;
-//            case R.id.refreshId_icon:
-//                getDeviceId();
-//                break;
+            case R.id.refreshId_icon:
+                getDeviceId();
+                break;
 
         }
     }
