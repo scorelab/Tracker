@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:drawable="@drawable/ic_refresh"
+    tools:targetApi="lollipop">
+    <target
+        android:name="rotationGroup"
+        android:animation="@animator/refresh_rotate" />
+
+</animated-vector>

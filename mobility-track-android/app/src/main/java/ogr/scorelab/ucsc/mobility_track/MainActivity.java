@@ -1,11 +1,18 @@
 package ogr.scorelab.ucsc.mobility_track;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.AnimatedVectorDrawable;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,12 +25,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.UiSettings;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,10 +51,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String deviceId = null;
 
     private boolean versionIs21;
-    
-    private ImageView playPauseButton;
 
     private MapFragment map;
+
+    private ImageView toggleTrackerIcon, refreshIdIcon;
+    private AnimatedVectorDrawable startDrawable, stopDrawable, refreshIdDrawable;
+
+    private AnimatorSet connectionInfoAnimator;
+    private ObjectAnimator connectionInfoFade;
+    private TextView connectionInfo;
+
+    private Resources resources;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,22 +73,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getDeviceId();
     }
 
-    private void init(){
+    @SuppressLint("NewApi")
+    private void init() {
         versionIs21 = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
 
-        txtMac = (TextView) findViewById(R.id.txtMac);
-        txtDeviceId = (TextView) findViewById(R.id.txtDeviceId);
-        playPauseButton = ((ImageView) findViewById(R.id.playPauseButton));
+        resources = getResources();
 
-        playPauseButton.setOnClickListener(this);
+        txtMac = (TextView) findViewById(R.id.txtMac);
+        txtDeviceId = (TextView) findViewById(R.id.device_id);
+        toggleTrackerIcon = ((ImageView) findViewById(R.id.toggle_icon));
+       // refreshIdIcon = ((ImageView) findViewById(R.id.refreshId_icon));
+        connectionInfo = ((TextView) findViewById(R.id.connection_info));
+
+        //Animators are separated so listener can be set directly to fade animator. Setting listener on set never calls onRepeat
+        connectionInfoAnimator = new AnimatorSet();
+        connectionInfoFade = ((ObjectAnimator) AnimatorInflater.loadAnimator(this, R.animator.connection_info_fade));
+        connectionInfoAnimator.playTogether(AnimatorInflater.loadAnimator(this, R.animator.connection_info_slide), connectionInfoFade);
+        connectionInfoAnimator.setTarget(connectionInfo);
+
+        findViewById(R.id.tracker_toggle).setOnClickListener(this);
+
+     //   refreshIdIcon.setOnClickListener(this);
 
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map));
         map.getMapAsync(this);
+
+        //Drawable animation is only played if API >= 21
+        if (versionIs21) {
+            startDrawable = ((AnimatedVectorDrawable) getDrawable(R.drawable.toggle_start_icon_animation));
+            stopDrawable = ((AnimatedVectorDrawable) getDrawable(R.drawable.toggle_stop_icon_animation));
+            refreshIdDrawable = ((AnimatedVectorDrawable) getDrawable(R.drawable.refresh_id_animation));
+        }
 
         getDeviceId();
 
     }
 
+    @SuppressLint("NewApi")
     private void getDeviceId() {
         try {
             String deviceMAC = getDeviceMAC();
@@ -88,6 +122,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (IOException e) {
             Log.e("TRACKER", e.getLocalizedMessage());
         }
+        //Animate
+//        if (versionIs21) {
+//            refreshIdIcon.setImageDrawable(refreshIdDrawable);
+//            refreshIdDrawable.start();
+//        }
     }
 
     @Override
@@ -110,18 +149,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
 
-        if (id == R.id.action_refresh_device_id) {
-            getDeviceId();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
     /* start background service */
-    public void start(View v) {
+    @SuppressLint("NewApi")
+    public void start() {
         if (deviceId == null) {
-            Toast.makeText(this, R.string.device_unregistered, Toast.LENGTH_LONG).show();
+            animateConnectionInfo(R.string.device_unregistered, true);
             return;
         }
         // Save device id in Shared Preferences.
@@ -130,16 +165,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editor.putString(getString(R.string.saved_device_id), deviceId);
         editor.apply();
 
+        //Animate UI
+        if (versionIs21) {
+            toggleTrackerIcon.setImageDrawable(startDrawable);
+            startDrawable.start();
+        } else {
+            toggleTrackerIcon.setImageResource(R.drawable.ic_pause);
+        }
+        animateConnectionInfo(R.string.connected_txt, false);
+
         Intent intent = new Intent(this, LocationUpdates.class);
         DataTransferHandler.isThisActive = true;
         startService(intent);
     }
 
     /* stop background service */
-    public void stop(View v) {
+    @SuppressLint("NewApi")
+    public void stop() {
         Intent intent = new Intent(this, LocationUpdates.class);
         stopService(intent);
         DataTransferHandler.isThisActive = false;
+
+        //Animate UI
+        if (versionIs21) {
+            toggleTrackerIcon.setImageDrawable(stopDrawable);
+            stopDrawable.start();
+        } else {
+            toggleTrackerIcon.setImageResource(R.drawable.ic_play);
+        }
+        animateConnectionInfo(R.string.not_connected_txt, false);
     }
 
     private String getDeviceMAC() throws IOException {
@@ -152,6 +206,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (String block : wifiManager.getConnectionInfo().getMacAddress().split(":"))
             mac += block.toUpperCase();
         return mac;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tracker_toggle:
+                toggleTracker();
+                break;
+//            case R.id.refreshId_icon:
+//                getDeviceId();
+//                break;
+
+        }
+    }
+
+    private void toggleTracker() {
+        if (!DataTransferHandler.isThisActive) {
+            start();
+        } else {
+            stop();
+        }
+    }
+
+    public void onMapReady(GoogleMap googleMap) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);
+    }
+
+    private void animateConnectionInfo(final int stringID, final boolean isError) {
+        connectionInfoFade.removeAllListeners();
+        connectionInfoFade.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+                connectionInfo.setText(stringID);
+                if (isError) {
+                    connectionInfo.setTextColor(resources.getColor(R.color.text_red));
+                } else {
+                    connectionInfo.setTextColor(resources.getColor(R.color.text_white));
+                }
+            }
+        });
+        connectionInfoAnimator.start();
     }
 
     /*public boolean isServiceRunning(Class<?> serviceClass) {
@@ -218,20 +328,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             return ret;
         }
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-
-
-        }
-    }
-
-    public void onMapReady(GoogleMap googleMap) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        googleMap.setMyLocationEnabled(true);
     }
 }

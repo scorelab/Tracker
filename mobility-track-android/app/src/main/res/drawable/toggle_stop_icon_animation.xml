@@ -1,13 +1,13 @@
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:drawable="@drawable/ic_play"
+    android:drawable="@drawable/ic_pause"
     tools:targetApi="lollipop">
 
     <target
         android:name="rotationGroup"
-        android:animation="@animator/stop_path" />
-    <target
-        android:name="path"
         android:animation="@animator/stop_rotation" />
+    <target
+        android:name="pausePath"
+        android:animation="@animator/stop_path" />
 
 </animated-vector>

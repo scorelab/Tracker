@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectAnimator android:propertyName="translationY"
+    android:valueFrom="0"
+    android:valueTo="-200"
+    android:duration="@integer/enter_duration"
+    android:interpolator="@android:interpolator/accelerate_cubic"
+    android:repeatCount="1"
+    android:repeatMode="reverse"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

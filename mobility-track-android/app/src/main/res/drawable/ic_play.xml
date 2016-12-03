@@ -11,7 +11,7 @@
         android:pivotX="24.0"
         android:pivotY="24.0">
         <path
-            android:name="path"
+            android:name="playPath"
             android:fillColor="#FFFFFF"
             android:pathData="M16,24L38,24L27.3,30.8L16,38ZM16,10L27.3,17.2L38,24L16,24Z"/>
     </group>

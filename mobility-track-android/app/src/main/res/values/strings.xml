@@ -11,11 +11,16 @@
     <string name="saved_device_id">deviceid</string>
     <string name="saved_device_id_default">0</string>
 
+    <string name="not_connected_txt">Tracking is not active</string>
+    <string name="connected_txt">Tracking is active</string>
+
     <!--Paths for animated vector drawables-->
     <string name="play_arrow">M16,24L38,24L27.3,30.8L16,38ZM16,10L27.3,17.2L38,24L16,24Z</string>
     <string name="pause">M12,10L20,10L20,38L12,38ZM28,10L36,10L36,38L28,38Z</string>
 
     <!--Maybe replace this with your own-->
     <string name="google_maps_api_key">AIzaSyAnkDdK7G7UDtgXUNEDrOrfAOlD91k6uFY</string>
+    <string name="mac_label">MAC:</string>
+    <string name="id_label">ID:</string>
 
 </resources>

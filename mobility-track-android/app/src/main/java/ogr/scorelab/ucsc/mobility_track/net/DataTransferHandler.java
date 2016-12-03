@@ -24,7 +24,7 @@ public class DataTransferHandler
 {
 
     // Is this service active or not. Used to control the data transfer loop.
-    public static boolean isThisActive = true;
+    public static boolean isThisActive = false;
 
     private int inCacheCount;   // Number of items in the database
 
