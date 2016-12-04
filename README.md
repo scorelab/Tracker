@@ -13,7 +13,8 @@ This consists of several main modules
   4. Android app to push data to the API 
   5. Documentation
 
- 
+##Software Architecture 
+![picture](Tracker Architecture.png)
  
 ##Installation Guide 
 
