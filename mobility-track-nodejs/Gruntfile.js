@@ -46,7 +46,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-concurrent');
   
   //Development task
- grunt.task('grunt', ['build','testServerJS'], function() {
+ grunt.task.registerMultiTask('grunt', ['build','testServerJS'], function() {
       process.exit(0);});
  }
   grunt.registerTask('default', ['jshint', 'concurrent']);
