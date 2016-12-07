@@ -44,6 +44,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-nodemon');
   grunt.loadNpmTasks('grunt-concurrent');
-
+  
+  //Development task
+ grunt.task('grunt', ['build','testServerJS'], function() {
+      process.exit(0);});
+ }
   grunt.registerTask('default', ['jshint', 'concurrent']);
 };
