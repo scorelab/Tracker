@@ -3,6 +3,6 @@ sudo: required
 node_js:
   - "stable"
 before_install: npm install -g grunt-cli
-install: npm install --save-dev load-grunt-tasks
+install: npm install grunt --save-dev
 before_script: grunt build
 script: grunt travis
