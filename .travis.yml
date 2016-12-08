@@ -5,7 +5,7 @@ node_js:
   - '6'
   - '5'
   - '4'
-before_install: npm install -g grunt-cli
+before_install: npm install -g grunt-cli initialize
 install: npm install
 before_script: grunt build
 script: grunt travis
