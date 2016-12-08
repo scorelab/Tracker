@@ -2,7 +2,7 @@ language: node_js
 sudo: required
 node_js:
   - "stable"
-before_install: npm install -g grunt-cli
-install: npm install grunt
+before_install: sudo npm install -g grunt-cli
+install: sudo npm install grunt
 before_script: grunt build
 script: grunt travis
