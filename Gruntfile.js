@@ -50,4 +50,4 @@ module.exports = function(grunt) {
       process.exit(0);});
  }
   grunt.registerTask('default', ['jshint', 'concurrent']);
-};
+}
