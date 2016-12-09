@@ -1,14 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:background="@android:color/white"
+              android:gravity="center"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
     <ImageView
-        android:layout_width="@dimen/splash_screen_logo_size"
-        android:layout_height="wrap_content"
-        android:src="@drawable/score_logo"
-        android:layout_centerInParent="true"/>
+        android:id="@+id/score_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/splash_screen_logo_size"
+        android:src="@drawable/score_logo"/>
 
-</RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/splash_text_layout"
+        android:layout_marginTop="16dp"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_my_location_black_24dp"/>
+
+        <TextView
+            android:id="@+id/splash_text"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:textSize="20sp"
+            android:text="@string/tracker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</LinearLayout>
