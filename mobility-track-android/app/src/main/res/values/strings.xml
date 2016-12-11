@@ -4,8 +4,8 @@
     <string name="app_name">Mobility-Track</string>
     <string name="tracker">Tracker</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_settings">Settings</string>
+    <string name="action_license">Licenses</string>
+    <string name="title_activity_license">Licenses</string>
     <string name="device_unregistered">Device unregistered</string>
     <string name="refresh_device_id">Refresh Device ID</string>
     <string name="preference_file_key">scorelab.ucsc.mobility_track</string>
