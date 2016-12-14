@@ -1,12 +1,13 @@
-var map =document.getElementById('map'), g,boxer,paths=[],markers = [],trackers = getTrackerLocations();
+var map, g,boxer,paths=[],markers = [],trackers = getTrackerLocations();
 
 function initMap() {
   g = google.maps;
-  map = document.getElementById('map');
+  map = new g.Map(document.getElementById('map'),{
+    zoom:8,
+    center:{lat:37,lng:-122},
+  });
   drawPath();
 }
-
-initMap();
 
 function drawPath() {
   var points = [];
