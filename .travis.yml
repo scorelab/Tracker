@@ -1,0 +1,8 @@
+language: node_js
+sudo: required
+node_js:
+  - "stable"
+before_install: npm install -g grunt-cli
+install: npm install grunt --save-dev
+before_script: grunt build
+script: grunt travis
