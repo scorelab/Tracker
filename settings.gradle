@@ -1,0 +1,5 @@
+include 'mobility-track-nodejs'
+include 'mobility-track-android'
+apply from: 'mobility-track-android/settings.gradle'
+
+
