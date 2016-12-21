@@ -209,4 +209,41 @@ exports.listLocationsById = function(req, res){
     res.send(rcd);
   });
 }
+exports.locationAndTrackerByIdTag = function (req, res) {
+	Tracker.find({ "_id":  req.params.id }, function (err, rcd) {
+	  if(err) console.log(err);
+          res.setHeader('content-type', 'application/json');
+          res.send(rcd);
+       	});
+	TrackerLocations.find({"id" : req.params.id}, function(err, rcd){
+       	  if(err) console.log(err);
+    	  res.setHeader('content-type', 'application/json');
+   	  res.send(rcd);
+      	});
+}
+exports.locationAndTrackerByDistance = function (req, res, givenLong,givenLat, xdistance) {
+	Tracker.find(function(err, data){
+    	  if(err) console.log(err);
+    	  data.forEach(function(entry) {
+		  var tracker = entry.toObject();
+		  TrackerLocations.find(function (err, data) { 
+				if (err) { console.log(err); res.send([]); return; } 
+						if (!data[0]) { console.log('No data for '+req.params.id); res.send([]); return; } 
+						res.setHeader('content-type','application/json');
+						tracker.data = data[0].data;
+						tracker.longitude = data[0].data[data[0].data.length-1].o;
+						tracker.latitude = data[0].data[data[0].data.length-1].a;
+			  			var difInLat = givenLat - tracker.latitude;
+			  			var difInLong = givenLong - tracker.longitude;
+						var xdistancesquared = xdistance*xdistance;
+						var difInPos = difInLat*difInLat + difInLong*difInLong;
+						if(difInPos < xdistancesquared){
+						     res.send([tracker]);
+						}
+			  
+		  	});
+			  
+		  });
+  	}); 
+}
 
