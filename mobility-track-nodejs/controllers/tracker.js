@@ -232,11 +232,9 @@ exports.locationAndTrackerByDistance = function (req, res, givenLong,givenLat, x
 						res.setHeader('content-type','application/json');
 						tracker.data = data[0].data;
 						tracker.longitude = data[0].data[data[0].data.length-1].o;
-						tracker.latitude = data[0].data[data[0].data.length-1].a;
-			  			var difInLat = givenLat - tracker.latitude;
-			  			var difInLong = givenLong - tracker.longitude;
+						tracker.latitude = data[0].data[data[0].data.length-1].a
 						var xdistancesquared = xdistance*xdistance;
-						var difInPos = difInLat*difInLat + difInLong*difInLong;
+						var difInPos = (givenLat - tracker.latitude)*(givenLat - tracker.latitude) + (givenLong - tracker.longitude)*(givenLong - tracker.longitude);
 						if(difInPos < xdistancesquared){
 						     res.send([tracker]);
 						}
