@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  *
@@ -12,54 +11,58 @@
  *
  */
 
-var express = require('express'),
-  http = require('http'),
-  path = require('path'),
-  engine = require('ejs-locals');
 
-var app = express();
+  var express = require('express')
+  var app = express();
+  var port = process.env.PORT || 3000;
+  var passport = require('passport');
+  var flash = require('connect-flash');
 
+  var cookieParser = require('cookie-parser');
+  var bodyParser = require('body-parser');
+  var session = require('express-session');
 
-app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
+  var path = require('path');
 
-  // use ejs-locals for all ejs templates:
+  var engine = require('ejs-locals');
+
+  require('./db');
+  require('./models/passport')(passport);
+
+  app.use(express.logger('dev'));
+  app.use(cookieParser());
+  app.use(bodyParser());
+
+  app.set('view engine', 'ejs');
   app.engine('ejs', engine);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
   app.use(function(req, res, next) {
-	res.header('Access-Control-Allow-Origin', '*');
-	return next();
+  res.header('Access-Control-Allow-Origin', '*');
+  return next();
   });
-  app.use(express.favicon());
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
+
+  //require for passport
+  app.use(session({
+    secret: 'yowhatsup ',
+    resave: false,
+    saveUnitialized:false
+  }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.use(flash());
+
+  require('./routes')(app, passport);
+
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
-});
 
-require('./db');
+  var controllers = require('./controllers'),
+      tracker = require('./controllers/tracker');
+  require('./')
 
-var controllers = require('./controllers'),
-  tracker = require('./controllers/tracker');
-  
-  
-app.configure('development', function(){
-  app.use(express.errorHandler());
-});
-
-//Routes
-require('./routes')(app);
-
-//===============================
-
-
-
-
-
-//Start server
-
-http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
-});
+  app.configure('development', function(){
+    app.use(express.errorHandler());
+  });
+  app.listen(port);
+  console.log('Express server listening on port '+port);

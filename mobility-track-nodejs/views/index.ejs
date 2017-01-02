@@ -1,20 +1,23 @@
-<% layout('layout') -%>
+<!doctype html>
+<html>
+<head>
+    <title>Tracker</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <style>
+        body        { padding-top:80px; }
+    </style>
+</head>
+<body>
+<div class="container">
 
-<!-- Content Header (Page header) -->
-<section class="content-header">
-    <h1>
-        <%= heading%>
-        <small>Control panel</small>
-    </h1>
-    <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active"><%= heading%></li>
-    </ol>
-</section>
+    <div class="jumbotron text-center">
+        <h1> Tracker</h1>
 
-<!-- Main content -->
-<section class="content">
-    <div id="googleMap" ></div>
+        <a href="/login" class="btn btn-default"><span class="fa fa-user"></span>Login</a>
+        <a href="/signup" class="btn btn-default"><span class="fa fa-user"></span>Signup</a>
+    </div>
 
-</section>
-<!-- /.content -->
+</div>
+</body>
+</html>

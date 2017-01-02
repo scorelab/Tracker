@@ -5,8 +5,8 @@
 
  //Test commit
 
-exports.index = function(req, res){
-  res.render('index', { heading: "Dashboard" });
+exports.dash = function(req, res){
+  res.render('dash', { heading: "Dashboard" });
 };
 
 exports.newtracker = function(req, res){
