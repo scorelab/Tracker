@@ -1,6 +1,7 @@
 module.exports = {
   development: {
     db: 'mongodb://localhost/mobilitytracker',
+    url: 'mongodb://localhost/mobilitytracker',
     app: {
       name: 'Nodejs Express Mongoose Demo'
     }

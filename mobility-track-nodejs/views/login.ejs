@@ -1,43 +1,57 @@
 <!doctype html>
 <html>
 <head>
-    <title>Tracker</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+
+    <title>Tracker | Login</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
     <style>
-        body        { padding-top:80px; }
+    .mdl-layout {
+	     align-items: center;
+       justify-content: center;
+     }
+     .mdl-layout__content {
+	      padding: 24px;
+	       flex: none;
+      }
     </style>
+
 </head>
 <body>
-<div class="container">
 
-<div class="col-sm-6 col-sm-offset-3">
+  <div class="mdl-layout mdl-js-layout mdl-color--grey-100">
+  	<main class="mdl-layout__content">
+  		<div class="mdl-card mdl-shadow--6dp">
+  			<div class="mdl-card__title mdl-color--primary mdl-color-text--white">
+  				<a href = "/" class="mdl-card__title-text">Tracker</a>
+  			</div>
+  	  	<div class="mdl-card__supporting-text">
 
-    <h1><span class="fa fa-sign-in"></span> Login</h1>
+          <% if (message.length > 0) { %>
+              <div><font color="red"><%= message %></font></div>
+          <% } %>
 
-    <% if (message.length > 0) { %>
-        <div class="alert alert-danger"><%= message %></div>
-    <% } %>
+          <form action="/login" method="post">
+              <div class="mdl-textfield mdl-js-textfield">
+                  <label>Email</label>
+                  <input type="text" class="mdl-textfield__input" name="email">
+              </div>
+              <div class="mdl-textfield mdl-js-textfield">
+                  <label>Password</label>
+                  <input type="password" class="mdl-textfield__input" name="password">
+              </div>
+    		  </div>
 
-    <form action="/login" method="post">
-        <div class="form-group">
-            <label>Email</label>
-            <input type="text" class="form-control" name="email">
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" class="form-control" name="password">
-        </div>
-
-        <button type="submit" class="btn btn-warning btn-lg">Login</button>
-    </form>
-
-    <hr>
-
-    <p>Already have an account? <a href="/login">Login</a></p>
-    <a href="/">Back</a>
-
-</div>
+    			<div class="mdl-card__actions mdl-card--border">
+    				<button type = "submit" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">LOGIN</button>
+    			</div>
+        </form>
+  		</div>
+  	</main>
+    <text>Don't have an account? </text><a href = "/signup">Sign up</a>
+  </div>
 
 </div>
 </body>

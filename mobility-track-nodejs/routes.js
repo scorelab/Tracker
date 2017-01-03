@@ -1,32 +1,39 @@
 module.exports = function(app, passport){
+
   var controllers = require('./controllers/index');
   var tracker = require('./controllers/tracker');
   var resources = require('./controllers/resources');
 
-
   //Account stuff
-  //Maybe put in a controller, but maybe next time, ey?
   app.get('/', function(req, res){
-    res.render('index.ejs');
+    res.render('login.ejs', {
+      message: req.flash('loginMessage')
+    });
   });
 
   app.get('/login', function(req, res){
-    res.render('login.ejs', {message: req.flash('loginMessage')});
+    res.render('login.ejs', {
+      message: req.flash('loginMessage')
+    });
   });
-  app.post('/login', passport.authenticate('local-login',{
-    sucessRedirect: '/dash',
-    failureReditect: '/login',
-    failureFlash: true
+
+  app.post('/login', passport.authenticate('local-login', {
+    successRedirect : '/dash',
+    failureRedirect : '/login',
+    failureFlash : true
   }));
 
   app.get('/signup', function(req, res){
-    res.render('signup.ejs', {message: req.flash('signupMessage')});
+    res.render('signup.ejs', {
+      message: req.flash('signupMessage')
+    });
   });
+
   app.post('/signup', passport.authenticate('local-signup', {
-    sucessRedirect: '/dash',
-    failureReditect: '/signup',
-    failureFlash: true
-  }));
+		successRedirect : '/dash',
+		failureRedirect : '/signup',
+		failureFlash : true
+	}));
 
   app.get('/logout', function(req, res) {
     req.logout();
@@ -63,7 +70,7 @@ module.exports = function(app, passport){
 
 function loggedIn(req, res, next) {
 
-  //if(req.isAuthenticated())
+  if(req.isAuthenticated())
     return next();
 
   res.redirect('/');
