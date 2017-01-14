@@ -1,0 +1,40 @@
+import org.gradle.api.tasks.Exec
+import org.apache.tools.ant.taskdefs.condition.Os
+
+
+defaultTasks 'bower'
+
+ext {
+	npmCommand = Os.isFamily(Os.FAMILY_WINDOWS) ? 'npm.cmd' : 'npm'
+	bowerCommand = Os.isFamily(Os.FAMILY_WINDOWS) ? 'bower.cmd' : 'bower'
+}
+
+// Get the path for the locally installed binaries
+task npmBin << {
+	new ByteArrayOutputStream().withStream { os ->
+		exec {
+			executable = npmCommand
+			args = ['bin']
+			standardOutput = os
+		}
+		ext.binPath = os.toString().trim() + File.separator
+	}
+}
+
+
+// Install packages from package.json
+task npm(type: Exec) {
+	description = "Grab NodeJS dependencies (from package.json)"
+	commandLine = [npmCommand, "install"]
+	inputs.file "package.json"
+	outputs.dir "node_modules"
+
+	tasks.npmBin.execute()
+
+}
+
+
+// Install the bower components for front-end library management
+task bower(dependsOn: 'npm', type: Exec){
+	commandLine "${npmBin.binPath}${bowerCommand}", 'install'
+}

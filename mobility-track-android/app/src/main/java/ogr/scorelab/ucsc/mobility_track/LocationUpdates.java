@@ -1,7 +1,7 @@
 package ogr.scorelab.ucsc.mobility_track;
 
 import android.Manifest;
-import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,8 +89,22 @@ public class LocationUpdates extends Service {
 
     // Notification
     protected void foregroundStuff() {
-        Notification notification = new Notification();
-        startForeground(1, notification);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle("Tracker")
+                        .setContentText("Tracking location");
+        // Intent for MainActivity
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        // Artificial back stack
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        notificationBuilder.setContentIntent(resultPendingIntent);
+
+        startForeground(1, notificationBuilder.build());
     }
 
     class MyLocationListener implements LocationListener {
