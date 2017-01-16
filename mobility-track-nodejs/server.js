@@ -18,7 +18,7 @@ var express = require('express'),
   engine = require('ejs-locals'),
   flash = require('connect-flash'),
   passport = require('passport'),
-  cookieParser = require('cookie-parser')
+  cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
   session = require('express-session');
 
