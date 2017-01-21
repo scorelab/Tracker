@@ -1,0 +1,10 @@
+allprojects {
+// This is one example for trying and seeing projects
+task hello << { task -> println "I'm $task.project.name" }
+}
+subprojects {
+apply plugin: "java"
+  repositories {
+      mavenCentral()
+  }
+}
