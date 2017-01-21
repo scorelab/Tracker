@@ -45,4 +45,80 @@ npm install -g grunt-cli
 grunt
 ```
 
+## OSX Installation Guide 
+
+OSX is also quite a simple installation. Skip the sections if you already 
+have that software installed.
+
+### Install Homebrew
+
+1. Run the installer
+```
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+2. Then run `brew update` to make sure Homebrew is up to date
+```
+brew update
+```
+
+3. Add Homebrew to the dollar $PATH so it can be accessed properly
+```
+echo "export Path=/usr/local/bin:$PATH" >> ~/.bash_profile && source  ~/.bash_profile
+```
+
+4. (Optional but suggested) Run `brew doctor` to make sure that homebrew is 
+ready to work.
+```
+brew doctor
+```
+
+### Node.js
+
+Use homebrew to install node.js and npm
+```
+brew install node
+```
+
+### Grunt
+
+1. Install Grunt's CLI with npm (If this did not work something went wrong 
+with the Node installation)
+```
+npm install -g grunt-cli
+```
+
+### MongoDB
+
+1. Use homebrew to install MongoDB
+```
+brew install mongodb
+```
+
+2. Setup the default 'data/db' folder for mongoDB (use `sudo` if you have to)
+```
+mkdir -p /data/db
+```
+
+3. Ensure the current user running mongoDB has read and write permissions for
+ the data/db
+ 
+### Running the app
+ 
+1. Ensure you are in /mobility-track-nodejs/ for the following steps
+ 
+2. Run mongoDB (use `sudo` if you need to)
+```
+mongod
+```
+
+3. Run grunt to finish the setup and start the server
+```
+grunt
+```
+
+4. Navigate to `localhost:3000` to access the site on your web browser.
+
+Now get started developing!
+
 
