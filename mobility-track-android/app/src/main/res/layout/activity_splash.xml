@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#607d8b">
+
+    <TextView
+        android:text="@string/tagline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView"
+        android:gravity="center"
+        android:textColor="#ccc"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp" />
+
+    <TextView
+        android:text="@string/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:gravity="center"
+        android:textSize="36sp"
+        android:textColor="#ffffff"
+        android:textColorHighlight="@color/common_google_signin_btn_text_light_pressed"
+        android:layout_above="@+id/textView"
+        android:layout_centerHorizontal="true" />
+    
+     <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/imageView"
+        android:padding="15dp"
+        android:src="@drawable/graphic" />
+
+</RelativeLayout>
