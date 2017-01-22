@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Values for morphing toggle icon animation-->
+    <integer name="path_duration">600</integer>
+    <integer name="rotation_duration">800</integer>
+
+    <!--Values sliding textview animation-->
+    <integer name="exit_duration">300</integer>
+    <integer name="enter_duration">300</integer>
+
+    <integer name="refresh_rotate_duration">1000</integer>
+</resources>
