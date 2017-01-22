@@ -15,10 +15,16 @@
 var express = require('express'),
   http = require('http'),
   path = require('path'),
-  engine = require('ejs-locals');
+  engine = require('ejs-locals'),
+  flash = require('connect-flash'),
+  passport = require('passport'),
+  cookieParser = require('cookie-parser'),
+  bodyParser = require('body-parser'),
+  session = require('express-session');
 
 var app = express();
 
+require('./config/passport')(passport);
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -31,31 +37,47 @@ app.configure(function(){
 	res.header('Access-Control-Allow-Origin', '*');
 	return next();
   });
+
+  //for login/sign-up
+  app.use(cookieParser());
+
   app.use(express.favicon());
+  app.use(express.methodOverride());
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
-  app.use(express.methodOverride());
+  //app.use( bodyParser.urlencoded({ extended: true }) );
+
+
+  //require for passport
+  app.use(session({
+    secret: 'yowhatsup ',
+    resave: false,
+    saveUnitialized:false
+  }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.use(flash());
+
+
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
 });
 
 require('./db');
 
+
 var controllers = require('./controllers'),
   tracker = require('./controllers/tracker');
-  
-  
+
+
 app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
 //Routes
-require('./routes')(app);
+require('./routes')(app, passport);
 
 //===============================
-
-
-
 
 
 //Start server

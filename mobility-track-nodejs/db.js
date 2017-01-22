@@ -1,7 +1,7 @@
 // Load configurations
 // if test env, load example file
 var env = process.env.NODE_ENV || 'development',
-  config = require('./Config')[env],
+  config = require('./config/database.js')[env],
   mongoose = require('mongoose');
 
 // Bootstrap db connection
