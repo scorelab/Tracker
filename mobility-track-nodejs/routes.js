@@ -1,4 +1,4 @@
-module.exports = function(app){
+module.exports = function(app, passport){
   var controllers = require('./controllers/index');
 var tracker = require('./controllers/tracker');
 var resources = require('./controllers/resources');
@@ -20,6 +20,15 @@ app.get('/api/tracker/:id/delete', tracker.delete);
 app.get('/api/tracker/findmac/:mac', tracker.findMac);
 app.get('/api/trackers', tracker.getTrackers);
 
+//authentication
+app.post('/signup',tracker.signup);
+app.post('/authenticate', tracker.authenticate);
+app.post('/login',passport.authenticate('local-login', { 
+	successRedirect: '/home', // redirect to the secure profile section
+	failureRedirect: '/login', // redirect back to the login page if there is an error
+	failureFlash: true // allow flash messages
+}));
+
 //TrackerLocation
 app.get('/api/tracker/location/data', tracker.listLocationData);
 app.post('/api/tracker/location/data', tracker.addLocationData);
@@ -29,4 +38,3 @@ app.get('/api/tracker/:id/location/data', tracker.listLocationsById);
 app.post('/api/resources/create', resources.create);
 
 };
-

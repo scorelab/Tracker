@@ -3,10 +3,16 @@
  * GET users listing.
  */
  
+var jwt = require('jsonwebtoken');
+
 var mongoose = require('mongoose')
    , TrackerLocations = mongoose.model('TrackerLocations')
    , Tracker = mongoose.model('Tracker')
 
+var User = require('../models/User');
+   
+   
+   
 exports.locations = function (req, res) {
 
        TrackerLocations.aggregate(
@@ -209,4 +215,141 @@ exports.listLocationsById = function(req, res){
     res.send(rcd);
   });
 }
+
+exports.authenticate = function (req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+	if (username) {
+		if (password) {
+			User.findOne({
+				'userDetails.username': username
+			}, function (err, user) {
+				if (err) throw err;
+				if (!user) {
+					res.json({
+						success: false,
+						message: 'Authentication failed. User not found:' + username
+					});
+				} else if (user) {
+					var hash = user.generateHash(password);
+					if (!user.validPassword(password)) {	// check if password matches
+						res.json({
+							success: false,
+							message: 'Authentication failed. Wrong password.'
+						});
+					} else {
+						sendToken(req, res, user);
+					}
+				}
+			});
+		}else {
+			res.status(400).json({
+				success: false,
+				message: 'Authentication failed. Password required.'
+			});
+		}
+	} else {
+		res.status(400).json({
+			success: false,
+			message: 'Authentication failed. Username required.'
+		});
+	}
+};
+
+var sendToken = function (req, res, user) {
+	var apiSecret = 'temporarySecret';
+	var tempUser = {
+		app: 'tracker',
+		context: {
+			username: user.userDetails.username,
+		}
+	};
+		
+	var token = jwt.sign(tempUser, apiSecret, {
+		expiresInMinutes: 1440 // expires in 24 hours
+	});
+
+	return res.json({
+		success: true,
+		token: token
+	});
+};
+
+exports.signup = function (req, res) {
+	var username = req.body.username;
+	var password = req.body.password;
+	var name = req.body.name;
+
+	if (username) {
+		if (password) {
+			User.findOne({
+				'userDetails.username': username
+			}, function (err, user) {
+				if (err) {
+					return res.json({
+						success: false,
+						message: 'Unexpected Error while checking user'
+					});
+				} else {
+					if (user) {
+						return res.json({
+							success: false,
+							message: 'Error: User already exists'
+						});
+					} else {
+
+						var newUser = new User();
+
+						newUser.userDetails.username = username;
+						newUser.userDetails.name = name;
+						newUser.userDetails.password = newUser.generateHash(password);
+
+						newUser.save(function (err) {
+							if (err) {
+								return res.json({
+									success: false,
+									message: 'Unexpected Error while saving new user'
+								});
+							}
+							else{
+								return res.status(200).json({
+									success: true,
+									message: 'User created'
+								});
+							}
+						});
+					}
+				}
+			});
+		} else {
+			res.status(400).json({
+				success: false,
+				message: 'Authentication failed. Password required.'
+			});
+		}
+	} else {
+		res.status(400).json({
+			success: false,
+			message: 'Authentication failed. Username required.'
+		});
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
