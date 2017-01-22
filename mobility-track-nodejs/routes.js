@@ -19,7 +19,10 @@ app.post('/api/tracker/:id/update', tracker.update);
 app.get('/api/tracker/:id/delete', tracker.delete);
 app.get('/api/tracker/findmac/:mac', tracker.findMac);
 app.get('/api/trackers', tracker.getTrackers);
-
+app.get('/api/tracker/:id', tracker.locationAndTrackerByIdTag);
+app.get('/api/tracker/:id/location', tracker.locationAndTrackerByIdTag);
+app.get('/api/tracker/data', tracker.locationAndTrackerByDistance);
+app.get('/api/tracker/location/data', tracker.locationAndTrackerByDistance);
 //TrackerLocation
 app.get('/api/tracker/location/data', tracker.listLocationData);
 app.post('/api/tracker/location/data', tracker.addLocationData);
