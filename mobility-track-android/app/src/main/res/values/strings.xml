@@ -3,6 +3,7 @@
 
     <string name="app_name">Tracker</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
     <string name="device_unregistered">Device unregistered</string>
     <string name="refresh_device_id">Refresh Device ID</string>
     <string name="preference_file_key">scorelab.ucsc.mobility_track</string>
