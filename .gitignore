@@ -1,8 +1,4 @@
 # Created by https://www.gitignore.io/api/java,node,gradle,android
-
-/mobility-track-web/target/
-/mobility-track-android/target/
-.idea/
 ### Android ###
 # Built application files
 *.apk
@@ -156,3 +152,7 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 # End of https://www.gitignore.io/api/java,node,gradle,android
+
+/mobility-track-web/target/
+/mobility-track-android/target/
+.idea/
