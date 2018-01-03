@@ -1,5 +1,40 @@
 {
   "name": "webapp",
+ "description" : "jumpstart mobility tracking apps",
+  "keywords": [
+      "Tracker"
+     ],
+  "bugs": "https://github.com/scorelab/Tracker/issues",  
+  "licenses":   [
+      { "type": "GPL-3.0",
+        "url": "https://www.gnu.org/licenses/gpl-3.0.en.html"
+      }
+  ],
+  "author": "SCoRe Community",
+  "contributors": [
+      "agentmilindu", 
+      "malithsen", 
+      "Danki567", 
+      "dkarakay", 
+      "dinush", 
+      "lucasjones", 
+      "KailasK", 
+      "hasa93", 
+      "tharindupr", 
+      "rhperera",
+      "paarandika", 
+      "whoami-nr", 
+      "psnmissaka", 
+      "basilnajjar", 
+      "charitha-scorelab", 
+      "manee92", 
+      "harsh183" 
+    ],
+  "repository": { 
+     "type": ["git"],
+     "url": "https://github.com/scorelab/Tracker.git"
+  },
+  "homepage": "http://www.scorelab.org/Tracker/", 
   "private": true,
   "devDependencies": {
     "autoprefixer-core": "^5.2.1",
@@ -37,5 +72,9 @@
   },
   "scripts": {
     "test": "grunt test"
-  }
+  },
+  "dependencies": {
+      
+  },
+ "version": "1.0.0"
 }
