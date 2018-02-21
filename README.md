@@ -3,7 +3,7 @@ Tracker
 
 Tracker is to help developers to jumpstart developping anykind of mobility tracking applications. 
 
-Tracker lets any type or number of GPS devices to post their locations to a nodejs server through a ReST service.
+Tracker lets any type or number of GPS devices to post their locations to a nodejs server through a REST service.
 
 This consists of several main modules
 
@@ -15,7 +15,7 @@ This consists of several main modules
 
  
  
-##Installation Guide 
+## Installation Guide 
 
 1. Clone the repo using
   ```
@@ -45,12 +45,12 @@ npm install -g grunt-cli
 grunt
 ```
 
-## OSX Installation Guide 
+### OSX Installation Guide 
 
 OSX is also quite a simple installation. Skip the sections if you already 
 have that software installed.
 
-### Install Homebrew
+#### Install Homebrew
 
 1. Run the installer
 ```
@@ -73,14 +73,14 @@ ready to work.
 brew doctor
 ```
 
-### Node.js
+#### Node.js
 
 Use homebrew to install node.js and npm
 ```
 brew install node
 ```
 
-### Grunt
+#### Grunt
 
 1. Install Grunt's CLI with npm (If this did not work something went wrong 
 with the Node installation)
@@ -88,7 +88,7 @@ with the Node installation)
 npm install -g grunt-cli
 ```
 
-### MongoDB
+#### MongoDB
 
 1. Use homebrew to install MongoDB
 ```
@@ -103,7 +103,7 @@ mkdir -p /data/db
 3. Ensure the current user running mongoDB has read and write permissions for
  the data/db
  
-### Running the app
+## Running the app
  
 1. Ensure you are in /mobility-track-nodejs/ for the following steps
  
